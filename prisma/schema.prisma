@@ -1,0 +1,10 @@
+// schema.tenant.prisma
+datasource db {
+  provider = "mysql"
+  url      = env("TENANT_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/tenant"
+}
