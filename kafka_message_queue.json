@@ -1,0 +1,362 @@
+[
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"da9101da-20e1-4f7d-a09f-ecf67b7533b9\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733763459,\"status\":\"pending\"}",
+        "timestamp": "1759733763462"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"ab89bc12-2ae9-459c-858f-479adb472543\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733765403,\"status\":\"pending\"}",
+        "timestamp": "1759733765403"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"2b89b80d-f8e6-43f5-b83c-d4daa8d54b27\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733765687,\"status\":\"pending\"}",
+        "timestamp": "1759733765688"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"c2e42485-8e96-4f21-b11c-be5ce0cbca6c\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733765842,\"status\":\"pending\"}",
+        "timestamp": "1759733765842"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"1911f5d3-592d-481e-a42a-e2ec5474cc48\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733766059,\"status\":\"pending\"}",
+        "timestamp": "1759733766059"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"d9babace-b47e-4671-a396-e865eb512627\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733766189,\"status\":\"pending\"}",
+        "timestamp": "1759733766189"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"1b31af4f-b608-4e05-9e69-36ff4c880327\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733766368,\"status\":\"pending\"}",
+        "timestamp": "1759733766368"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"928598ff-cae1-4c2b-8727-00f3e85c51a1\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733766550,\"status\":\"pending\"}",
+        "timestamp": "1759733766551"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"af9b6a9c-c6c3-4706-88d1-1438f317eec7\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733766784,\"status\":\"pending\"}",
+        "timestamp": "1759733766785"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"9dd7be68-a57c-4f66-8ee9-89e3dec58103\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733766904,\"status\":\"pending\"}",
+        "timestamp": "1759733766905"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"0a970865-92f8-45a1-82e4-bdb850fb8bac\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733767092,\"status\":\"pending\"}",
+        "timestamp": "1759733767093"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"3ac95758-6669-408c-a61a-88e0b5d08c89\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733767315,\"status\":\"pending\"}",
+        "timestamp": "1759733767315"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"40980b3a-4388-4e14-a53f-366ed0be8dac\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733767461,\"status\":\"pending\"}",
+        "timestamp": "1759733767461"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"9fe962da-8f56-4d22-81b9-a54ffaa38a4a\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733767629,\"status\":\"pending\"}",
+        "timestamp": "1759733767629"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"a4d6b6f0-f761-4144-8d2f-5e286ed4adfe\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733767810,\"status\":\"pending\"}",
+        "timestamp": "1759733767810"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"ef6c9c6e-92e1-4d93-8426-a6a830d571b1\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733767991,\"status\":\"pending\"}",
+        "timestamp": "1759733767992"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"6a36ff75-8f02-4339-b2cd-b64d30bd4b9f\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733768187,\"status\":\"pending\"}",
+        "timestamp": "1759733768187"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"8f301ea9-4c88-41bd-97e4-8790912d2b47\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733768330,\"status\":\"pending\"}",
+        "timestamp": "1759733768330"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"5961099d-9827-4807-a1f6-4b21e62ec8df\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733768501,\"status\":\"pending\"}",
+        "timestamp": "1759733768501"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"60cbdec9-f3b4-4836-9e97-bcdc94b4a1ae\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733768667,\"status\":\"pending\"}",
+        "timestamp": "1759733768667"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"c89cd987-9054-42f7-82b4-fa936b9dc325\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733768819,\"status\":\"pending\"}",
+        "timestamp": "1759733768819"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"b10533ae-4097-4fcb-b21b-ed7181828c70\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733768986,\"status\":\"pending\"}",
+        "timestamp": "1759733768986"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"b3c0ac35-8691-442c-ac7e-da091ac5a9f2\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733769201,\"status\":\"pending\"}",
+        "timestamp": "1759733769201"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"80b0a18d-665c-494b-983f-c6b326cb0b48\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733769403,\"status\":\"pending\"}",
+        "timestamp": "1759733769403"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"92e5d373-c1f7-456b-a512-97c5857c363d\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733769485,\"status\":\"pending\"}",
+        "timestamp": "1759733769485"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"e0dd7022-483b-4a0e-9fbd-b0c0814f6caf\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733769687,\"status\":\"pending\"}",
+        "timestamp": "1759733769687"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"cae6f7e1-f0b8-4c75-a748-128bb4cdda35\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733769820,\"status\":\"pending\"}",
+        "timestamp": "1759733769820"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"5efad5b6-7354-4b33-89de-416b66c1372a\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733770001,\"status\":\"pending\"}",
+        "timestamp": "1759733770003"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"aecff7f4-178f-4925-b486-9c0dadea91f9\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733770215,\"status\":\"pending\"}",
+        "timestamp": "1759733770215"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"f273efc7-0ee8-459c-808e-07703b0a80d7\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733770436,\"status\":\"pending\"}",
+        "timestamp": "1759733770436"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"804c49c3-d9a0-4af7-8508-059eff237a11\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733770585,\"status\":\"pending\"}",
+        "timestamp": "1759733770585"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"69110d43-cf68-4059-83f8-5583ada4f245\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733770751,\"status\":\"pending\"}",
+        "timestamp": "1759733770751"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"21a18fd4-9a45-46a0-a97a-ae3cf217f20f\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733770907,\"status\":\"pending\"}",
+        "timestamp": "1759733770907"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"07f7324f-07e9-4dc4-b3d5-5cdb62a5463a\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733771084,\"status\":\"pending\"}",
+        "timestamp": "1759733771084"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"dceacb5a-8468-4340-bc63-f6702003d8a8\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733771253,\"status\":\"pending\"}",
+        "timestamp": "1759733771253"
+      }
+    ]
+  },
+  {
+    "topic": "game.teenpatti.bets",
+    "messages": [
+      {
+        "key": "user_123",
+        "value": "{\"betId\":\"6318b853-3d83-48ca-9c7c-9d7ad357b34c\",\"userId\":\"user_123\",\"tableId\":\"table_1\",\"amount\":500,\"betType\":\"player\",\"game\":\"teenpatti\",\"timestamp\":1759733771418,\"status\":\"pending\"}",
+        "timestamp": "1759733771418"
+      }
+    ]
+  }
+]
