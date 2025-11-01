@@ -1,9 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { KafkaService } from 'src/kafka/kafka.service';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayInit,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 
+
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 @Injectable()
-export class TeenpattiService {
+export class TeenpattiService  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   private readonly logger = new Logger(TeenpattiService.name);
   private betCount = 0;
   private startTime = Date.now();
@@ -12,7 +26,58 @@ export class TeenpattiService {
     // Log throughput every 5 seconds
     setInterval(() => this.logThroughput(), 5000);
   }
+  @WebSocketServer()
+  server: Server;
 
+  // ✅ Required WebSocket lifecycle methods
+  afterInit(server: Server) {
+    console.log(' Teenpatti Gateway Initialized');
+  }
+
+  handleConnection(client: Socket) {
+    console.log(` Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket) {
+    console.log(`Client disconnected: ${client.id}`);
+  }
+
+  public running = false;
+    async startTimers() {
+    if (this.running) return; // prevent duplicate loops
+    this.running = true;
+
+    const phases = [
+      { name: 'bettingTimer', duration: 30 },
+      { name: 'winningCalculationTimer', duration: 4 },
+      { name: 'resultAnnounceTimer', duration: 5 },
+      { name: 'newGameStartTimer', duration: 40 },
+    ];
+
+    while (true) {
+      for (const phase of phases) {
+        console.log(`Starting phase: ${phase.name}`);
+        for (let remaining = phase.duration; remaining >= 0; remaining--) {
+          // broadcast remaining seconds to all clients
+          this.server.emit('teenpattiTimer', {
+            phase: phase.name,
+            remaining,
+          });
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        // broadcast phase complete
+        this.server.emit('teenpattiTimer', {
+          phase: phase.name,
+          message: `${phase.name} completed.`,
+        });
+
+        console.log(` Phase completed: ${phase.name}`);
+      }
+
+      // after all timers finish, loop restarts (new game cycle)
+    }
+  }
   async placeBet(bet: {
     userId: string;
     amount: number;
