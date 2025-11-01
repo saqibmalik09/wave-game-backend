@@ -1,5 +1,5 @@
 // src/prisma/tenant.service.ts
-import { PrismaClient as TenantPrisma } from '../../prisma/generated/master';
+import { PrismaClient as TenantPrisma } from '../../prisma/generated/tenant';
 
 export async function getTenantPrisma(org: {
   dbUser: string;
@@ -10,7 +10,7 @@ export async function getTenantPrisma(org: {
   return new TenantPrisma({
     datasources: {
       db: {
-        url: `mysql://${org.dbUser}:${org.dbPassword}@${org.dbHost}/${org.dbName}`,
+        url: `mysql://${org.dbUser}:${org.dbPassword}@${org.dbHost}:3306/${org.dbName}`,
       },
     },
   });
