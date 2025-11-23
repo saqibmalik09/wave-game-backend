@@ -39,13 +39,14 @@ export class TeenpattiConsumer implements OnModuleInit {
 
     try {
       // 1. Validate bet
-      if (!bet.userId || !bet.amount || !bet.tableId) {
+      if (!bet.userId || !bet.amount) {
         throw new Error('Invalid bet data');
       }
-
+      //api that call that app  and will bet user
+      // console.log("bet:",bet)
       // 2. Run game logic (simulate processing)
       const result = await this.runGameLogic(bet);
-
+      //  console.log("result:",result)
       // 3. Update database (you'll implement this)
       // await this.saveBetToDatabase(bet, result);
 
@@ -75,7 +76,7 @@ export class TeenpattiConsumer implements OnModuleInit {
       );
 
       // Notify user of error
-      this.socketGateway.broadcastToTable(bet.tableId, 'betError', {
+      this.socketGateway.broadcastToTable(bet.userId, 'betError', {
         betId: bet.betId,
         userId: bet.userId,
         error: error.message,
