@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { TeenpattiService } from 'src/games/teen-patti-game/teenpatti/teenpatti.service';
+import { PlaceBetDto } from 'src/games/dto/place-bet.dto';
 
 @WebSocketGateway({
   cors: {
@@ -123,7 +124,7 @@ handleJoinTable(
   @SubscribeMessage('placeBet')
   async handlePlaceBet(
     @ConnectedSocket() client: Socket,
-    @MessageBody() betData: { userId: string; amount: number; tableId: string; betType?: string },
+    @MessageBody() betData: PlaceBetDto,
   ) {
     try {
       const startTime = Date.now();
@@ -132,7 +133,6 @@ handleJoinTable(
       client.emit('betAcknowledged', {
         success: true,
         userId: betData.userId,
-        tableId: betData.tableId,
         timestamp: startTime,
       });
 
@@ -147,7 +147,7 @@ handleJoinTable(
       });
 
       // Broadcast to table (optional - or wait for consumer to do this)
-      this.broadcastToTable(betData.tableId, 'betPlaced', {
+      this.broadcastToTable(betData.userId, 'betPlaced', {
         userId: betData.userId,
         amount: betData.amount,
         timestamp: Date.now(),

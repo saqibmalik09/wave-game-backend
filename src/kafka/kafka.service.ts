@@ -360,9 +360,9 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
     }, 5000);
   }
 
-  async produce(game: string, message: any): Promise<void> {
-    const topic = `game.${game}.bets`;
-    
+  async produce(game: string, betData: any): Promise<void> {
+   
+    const topic = `game.${game}.bets`;    
     try {
       if (!this.isProducerConnected) {
         throw new Error('Producer is not connected');
@@ -372,8 +372,8 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
         topic,
         messages: [
           {
-            key: message.userId || null,
-            value: JSON.stringify(message),
+            key: betData.userId || null,
+            value: JSON.stringify(betData),
             timestamp: Date.now().toString(),
           },
         ],
