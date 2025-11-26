@@ -62,3 +62,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /prisma/generated/
 /prisma/master/generated/
 /prisma/tenant/generated/
+
+HIGH_PERFORMANCE_BETTING_GUIDE.md
+KAFKA_MANAGEMENT_GUIDE.md
+README.md
+package-lock.json
