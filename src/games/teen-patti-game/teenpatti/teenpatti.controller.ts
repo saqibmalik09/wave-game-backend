@@ -262,44 +262,44 @@ export class TeenpattiController {
 
 
 
-  // game players name id and profile pic  
-  @Post('/potbetandusers/list')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Fetch game betting pots and user bet details by gameId' })
-  @ApiBody({
-    description: 'Provide the gameId to fetch its pots, bets, and users',
-    required: true,
-    schema: {
-      type: 'object',
-      properties: {
-        gameId: { type: 'number', example: 16, description: 'Unique ID of the game' },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns the game betting pots list and user bets data',
-    example: {
-      success: true,
-      message: 'Game bets fetched successfully',
-      data: {
-        pots: [
-          { potName: 'pot1', betCoins: [50, 100, 100, 200, 500, 100, 50, 200], totalBetAmount: 1300 },
-          { potName: 'pot2', betCoins: [100, 100, 200, 50, 500, 100], totalBetAmount: 1050 },
-          { potName: 'pot3', betCoins: [50, 100, 100, 500, 200], totalBetAmount: 950 },
-        ],
-        users: [
-          { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/65.jpg' },
-          { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/66.jpg' },
-          { userId: 'user_103', name: 'Charlie', imageProfile: 'https://randomuser.me/api/portraits/men/67.jpg' },
-        ],
-      },
-    },
-  })
-  async gamePotBetAndUsersList(@Body() body: { gameId: number }) {
-    const { gameId } = body;
-    return this.teenpattiService.getPotBetsAndUsers(body);
-  }
+  // // game players name id and profile pic  
+  // @Post('/potbetandusers/list')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'Fetch game betting pots and user bet details by gameId' })
+  // @ApiBody({
+  //   description: 'Provide the gameId to fetch its pots, bets, and users',
+  //   required: true,
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       gameId: { type: 'number', example: 16, description: 'Unique ID of the game' },
+  //     },
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Returns the game betting pots list and user bets data',
+  //   example: {
+  //     success: true,
+  //     message: 'Game bets fetched successfully',
+  //     data: {
+  //       pots: [
+  //         { potName: 'pot1', betCoins: [50, 100, 100, 200, 500, 100, 50, 200], totalBetAmount: 1300 },
+  //         { potName: 'pot2', betCoins: [100, 100, 200, 50, 500, 100], totalBetAmount: 1050 },
+  //         { potName: 'pot3', betCoins: [50, 100, 100, 500, 200], totalBetAmount: 950 },
+  //       ],
+  //       users: [
+  //         { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/65.jpg' },
+  //         { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/66.jpg' },
+  //         { userId: 'user_103', name: 'Charlie', imageProfile: 'https://randomuser.me/api/portraits/men/67.jpg' },
+  //       ],
+  //     },
+  //   },
+  // })
+  // async gamePotBetAndUsersList(@Body() body: { gameId: number }) {
+  //   const { gameId } = body;
+  //   return this.teenpattiService.getPotBetsAndUsers(body);
+  // }
 
 
 

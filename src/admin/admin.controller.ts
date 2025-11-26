@@ -102,63 +102,91 @@ export class AdminController {
       },
     },
   })
-  async getTenantUsers(@Param('orgId') orgId: string) {
+  async getTenantUsers(@Param('orgId') orgId: number) {
     return this.adminService.getTenantUsers(orgId);
   }
+ 
 
-
-@Post('/game/configuration')
-@HttpCode(HttpStatus.OK)
-@ApiOperation({ summary: 'Fetch game betting coins and configuration by gameId' })
+@Post('/game/create')
+@HttpCode(HttpStatus.CREATED)
+@ApiOperation({ summary: 'Create a new game in master database' })
 @ApiBody({
-  description: 'Provide the gameId to fetch its configuration',
-  required: true,
+  description: 'Game creation payload including config JSON',
   schema: {
     type: 'object',
     properties: {
-      gameId: { type: 'number', example: 16, description: 'Unique ID of the game' },
-    },
-  },
+      name: { type: 'string', example: 'Teen Patti' },
+      description: { type: 'string', example: 'Teen Patti 3-card game' },
+      appKey: { type: 'string', example: 'TP12345' },
+      token: { type: 'string', example: 'secrettoken123' },
+      status: { type: 'string', example: 'active' },
+      config: {
+        type: 'object',
+        example: {
+          gameId: 16,
+          bettingCoins: [100, 500, 1000, 10000],
+          cardImages: [
+            ["https://deckofcardsapi.com/static/img/AS.png", "https://deckofcardsapi.com/static/img/2S.png", "https://deckofcardsapi.com/static/img/3S.png"],
+            ["https://deckofcardsapi.com/static/img/4S.png", "https://deckofcardsapi.com/static/img/5S.png", "https://deckofcardsapi.com/static/img/6S.png"],
+            ["https://deckofcardsapi.com/static/img/7S.png", "https://deckofcardsapi.com/static/img/8S.png", "https://deckofcardsapi.com/static/img/9S.png"]
+          ],
+          cardBackImages: [
+            ["https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png"],
+            ["https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png"],
+            ["https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png"]
+          ],
+          dealerAvatar: "https://i.pinimg.com/1200x/75/8e/93/758e934581866746e2c83d48c269f9a9.jpg",
+          tableBackgroundImage: "https://cdn.hub88.io/onetouchlive/bg/ont_teenpatti20-20.jpg",
+          betButtonAndCardClickSound: "https://yourdomain.com/button-click.mp3",
+          timerUpSound: "https://yourdomain.com/timer-up.mp3",
+          cardsShuffleSound: "https://yourdomain.com/cards-shuffling.mp3",
+          returnWinngingPotPercentage: [1.9, 2.0, 2.5],
+          colors: ["#33ff66", "#3366ff", "#ffcc00", "#9933ff"],
+          winningCalculationTime: 3000,
+          BettingTime: 40000,
+          nextBetWait: 5000
+        }
+      }
+    }
+  }
 })
 @ApiResponse({
-  status: 200,
-  description: 'Returns the game betting configuration',
-  example: {
-    success: true,
-    message: 'Game configuration fetched successfully',
-    data: {
-      gameId: 16,
-      bettingCoins: [10, 50, 100, 500, 1000],
-      colors: ['red', 'green', 'blue', 'yellow'],
-    },
-  },
+  status: 201,
+  description: 'Game created successfully',
 })
-async gameConfiguration(@Body() body: { gameId: number }) {
-  const { gameId } = body;
+async createGame(@Body() body: any) {
+  return await this.adminService.createGameInMaster(body);
+}
 
-  if (!gameId || typeof gameId !== 'number') {
+  @Get('/game/configuration')
+  @ApiOperation({ summary: 'Fetch all games from master DB' })
+  @ApiResponse({
+    status: 200,
+    description: 'All games returned successfully',
+  })
+  async getAllGames() {
+    return this.adminService.getAllGames();
+  }
+
+@Get('/game/configuration/:id')
+@ApiOperation({ summary: 'Fetch game config by game ID' })
+@ApiResponse({
+  status: 200,
+  description: 'Game config returned successfully',
+})
+async getGameById(@Param('id') id: string) {
+  const gameId = parseInt(id, 10);
+
+  if (isNaN(gameId)) {
     return {
       success: false,
-      message: 'Invalid or missing gameId in request body.',
+      message: 'Invalid game ID',
       data: null,
     };
   }
 
-  const config = await this.adminService.waveGameConfiguration(body);
-
-  if (!config) {
-    return {
-      success: false,
-      message: `No configuration found for gameId ${gameId}`,
-      data: null,
-    };
-  }
-
-  return {
-    success: true,
-    message: 'Game configuration fetched successfully',
-    data: config,
-  };
+  // Pass as an object to match your service method signature
+  return this.adminService.waveGameConfiguration({ gameId });
 }
 
 

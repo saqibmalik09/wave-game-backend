@@ -14,6 +14,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { HttpService } from '@nestjs/axios';
 import axios from 'axios';
+import { masterPrisma } from 'src/prisma/masterClient';
 
 
 
@@ -41,19 +42,55 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     console.log(' Teenpatti Gateway Initialized');
   }
 
-  handleConnection(client: Socket) {
-    console.log(` Client connected: ${client.id}`);
+  async handleConnection(client: Socket) {
+    const userId = client.handshake.query.userId as string;
+
+    if (userId) {
+      await masterPrisma.gameOngoingUsers.upsert({
+        where: { userId },
+        update: {
+          connectionUserId: userId, // ✅ store socket id here!
+          socketId:client.id
+        },
+        create: {
+          userId,
+          socketId:client.id,
+          connectionUserId: userId, // ✅ save on first creation
+        },
+      });
+    }
+
+    console.log(` Client connected: ${client.id} userId ${userId}`);
   }
 
-  handleDisconnect(client: Socket) {
+
+ async handleDisconnect(client: Socket) {
+  try {
     console.log(`Client disconnected: ${client.id}`);
+    // 1. Find user record using socketId
+    const user = await masterPrisma.gameOngoingUsers.findFirst({
+      where: { socketId: client.id },
+    });
+    if (user) {
+      await masterPrisma.gameOngoingUsers.delete({
+        where: { userId: user.userId },
+      });
+
+      console.log(`Deleted disconnected user: ${user.userId}`);
+    } else {
+      console.log(`No user found with socketId: ${client.id}`);
+    }
+  } catch (error) {
+    console.error("Error in handleDisconnect:", error);
   }
+}
 
   public running = false;
+  public announceWinningSent = false;
   public Users = [
-    { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/65.jpg',socketId:"" },
-    { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/66.jpg',socketId:"" },
-    { userId: 'user_103', name: 'Charlie', imageProfile: 'https://randomuser.me/api/portraits/men/67.jpg',socketId:"" },
+    { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/65.jpg', socketId: "" },
+    { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/66.jpg', socketId: "" },
+    { userId: 'user_103', name: 'Charlie', imageProfile: 'https://randomuser.me/api/portraits/men/67.jpg', socketId: "" },
     // { userId: 'user_105', name: 'Max', imageProfile: 'https://randomuser.me/api/portraits/men/68.jpg' },
     // { userId: 'user_108', name: 'Alex', imageProfile: 'https://randomuser.me/api/portraits/men/70.jpg' },
     // { userId: 'user_108', name: 'Alex', imageProfile: 'https://randomuser.me/api/portraits/men/70.jpg' },
@@ -64,6 +101,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     if (this.running) return; // prevent duplicate loops
     this.running = true;
 
+
     const phases = [
       { name: 'bettingTimer', duration: 30 },
       { name: 'winningCalculationTimer', duration: 4 },
@@ -73,9 +111,11 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
     while (true) {
       for (const phase of phases) {
-        console.log(`Starting phase: ${phase.name}`);
         for (let remaining = phase.duration; remaining >= 0; remaining--) {
           // broadcast remaining seconds to all clients
+          if (phase.name !== 'resultAnnounceTimer') {
+            this.announceWinningSent = false;
+          }
           this.server.emit('teenpattiTimer', {
             phase: phase.name,
             remaining,
@@ -88,7 +128,10 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           phase: phase.name,
           message: `${phase.name} completed.`,
         });
-
+        if (phase.name === 'resultAnnounceTimer' && !this.announceWinningSent) {
+          this.announceWinningSent = true;
+          this.announceGameResult();
+        }
         console.log(` Phase completed: ${phase.name}`);
       }
 
@@ -112,7 +155,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     const betId = uuidv4();
     const timestamp = Date.now();
     const { userId, amount, betType, appKey, token, gameId, potIndex, socketId } = bet
-    console.log("socketId:", socketId)
     //call api
     let submitFlowData = {
       "betAmount": amount,
@@ -229,190 +271,425 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     };
   }
 
+  public teenpattiGameProbability(): number {
+    const options = [0, 1, 2];
+    const randomIndex = Math.floor(Math.random() * options.length);
+    return options[randomIndex];
+  }
+  public async playerIdAndTotalBet(potIndex: number): Promise<Record<string, number>> {
+    // Group by userId and sum their bet amounts
+    const betSums = await masterPrisma.ongoingTeenpattiGame.groupBy({
+      by: ['userId'],
+      where: { potIndex },
+      _sum: { amount: true },
+    });
+
+    // Filter out null userIds and format result
+    const winnerAmounts = betSums
+      .filter(b => b.userId !== null)
+      .reduce((acc, b) => {
+        acc[b.userId as string] = b._sum.amount || 0;
+        return acc;
+      }, {} as Record<string, number>);
+
+    return winnerAmounts;
+  }
+  public expectedWinningAmount(
+    winnerIdsAndTotalBet: Record<string, number>,
+    winningPercentage: number
+  ): Record<string, number> {
+    const results: Record<string, number> = {};
+
+    for (const userId in winnerIdsAndTotalBet) {
+      const totalBet = winnerIdsAndTotalBet[userId] ?? 0;
+      const winningAmount = Math.round(totalBet * winningPercentage);
+      results[userId] = winningAmount;
+    }
+
+    return results;
+  }
+
   @SubscribeMessage('teenpattiAnnounceGameResult')
-async announceGameResult() {
-  let winnerIds = ["user_123", "user_103"];
-
-  // Loop winners and send private messages
-  for (const userId of winnerIds) {
-    const winner = this.Users.find(u => u.userId === userId);
-    console.log("winnerRecord:",winner)
-    if (!winner ) {
-      console.log("Socket not found for:", userId);
-      continue;
-    }
-
-    const winningMessage = {
-      userId: winner.userId,
-      winningAmount: 150
+  async announceGameResult() {
+    let winningPotIndex = this.teenpattiGameProbability();
+    let winnningExpPercentage = {
+      0: 1.9,
+      1: 2.9,
+      2: 2.2
     };
-    console.log("winner:",winner)
-    // Send ONLY to this winner
-    this.server.emit("toWinnerMessage", winningMessage);
-
-    console.log("Message sent to winner:", winner.userId, "Socket:", winner.socketId);
-  }
-
-  // Public broadcast response
-  const response = {
-    success: true,
-    message: 'Winners announced successfully',
-    data: {
-      winners: [
-        {
-          userId: 'user_123',
-          amountWon: 1500,
-          gameId: 16,
-          imageProfile: 'https://randomuser.me/api/portraits/men/75.jpg',
+    //  Get userIds and their total bet for that potIndex
+    const winnerIdsAndTotalBet = await this.playerIdAndTotalBet(winningPotIndex);
+    //  Get correct winning percentage
+    const winningPercentage = winnningExpPercentage[winningPotIndex];
+    //  Calculate the expected winning amount for each user
+    const expectedWinningAmount = this.expectedWinningAmount(
+      winnerIdsAndTotalBet,
+      winningPercentage
+    );
+    // If you need only the userIds
+    const winnerIds = Object.keys(expectedWinningAmount);
+    //  Loop winners and send private messages
+    for (const userId of winnerIds) {
+      const winnerRecord = await masterPrisma.gameOngoingUsers.findFirst({
+        where: { userId },
+        select: {
+          socketId: true,  // must be socketId: true
+          token: true
         },
-      ],
-      winningPot: 'pot1',
-      winningPotIndex: 0,
-      winningCards: [
-        'https://deckofcardsapi.com/static/img/AS.png',
-        'https://deckofcardsapi.com/static/img/2S.png',
-        'https://deckofcardsapi.com/static/img/3S.png',
-      ],
-      winningPotRankText: 'Pair',
-    },
-  };
+      });
 
-  this.server.emit('teenpattiAnnounceGameResultResponse', response);
+      if (!winnerRecord) {
+        console.log("DB record not found for:", userId);
+        continue;
+      }
+      let socketId = winnerRecord.socketId;
 
-  return response;
-}
+      console.log("userIdsss:", userId, "socketId:", socketId)
 
-@SubscribeMessage('teenpattiGameTableJoin')
-async gameTeenpattiJoin(
- @ConnectedSocket() client: Socket, 
-  @MessageBody() user: any
-) {  
-  const existingUser = this.Users.find(u => u.userId === user.userId);
-
-  if (!existingUser) {
-    this.Users.unshift(user);
-  } else {
-    console.log(`User ${user.name} already in game table`);
-  }
-  client.join('teenPattiGame');
-  this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', { 
-    users: this.Users 
-  });
-  
-  return { success: true, users: this.Users };
-}
-
-
-@SubscribeMessage('mySocketId')
-async mySocketId(
-  @ConnectedSocket() client: Socket,
-  @MessageBody() data: any
-) {
-  const { userId } = data;
-
-  // Find user
-  const userIndex = this.Users.findIndex(u => u.userId === userId);
-  if (userIndex === -1) {
-    return { success: false, message: "User not found" };
-  }
-    this.Users[userIndex].socketId = client.id;
-  client.emit("socketIdSaved", {
-    success: true,
-    user: this.Users[userIndex],
-  });
-
-  return {
-    success: true,
-    user: this.Users[userIndex]
-  };
-}
-
-@SubscribeMessage('teenpattiGameTableLeave')
-async gameTeenpattiLeave(
-  @ConnectedSocket() client: Socket,
-  @MessageBody() user: any
-) {
-  this.Users = this.Users.filter(u => u.userId !== user.userId);
-  client.leave('teenPattiGame');
-  
-  this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', { 
-    users: this.Users 
-  });
-  
-  return { success: true, users: this.Users };
-}
-
-  @SubscribeMessage('userUpdatedData')
-  async getUserData() {
-    const response = {
-      success: true,
-      message: 'User data fetched successfully',
-      data: {
-        user: [
-          {
-            userId: 'user_123',
-            balance: 1500,
-            gameId: 16,
-            imageProfile: 'https://randomuser.me/api/portraits/men/75.jpg',
-          },
-          {
-            userId: 'user_345',
-            balance: 1500,
-            gameId: 16,
-            imageProfile: 'https://randomuser.me/api/portraits/men/75.jpg',
-          }
-        ],
-      },
-    };
-
-    if (this.server) {
-      this.server.emit('userUpdatedDataResponse', response);
-    }
-    return response;
-  }
-
-  @SubscribeMessage('teenpattiPotBetsAndUsers')
-  async getPotBetsAndUsers(@MessageBody() { gameId }: { gameId: number }) {
-    const potsAndUsers = {
-      16: {
-        pots: [
-          { potName: 'pot1', betCoins: [50, 100, 100, 200, 500, 100, 50, 200], totalBetAmount: 1300 },
-          { potName: 'pot2', betCoins: [100, 100, 200, 50, 500, 100], totalBetAmount: 1050 },
-          { potName: 'pot3', betCoins: [50, 100, 100, 500, 200], totalBetAmount: 950 },
-        ],
-        users: this.Users,
-      },
-      42: {
-        pots: [
-          { potName: 'pot1', betCoins: [10, 50, 100, 200], totalBetAmount: 360 },
-          { potName: 'pot2', betCoins: [25, 25, 50], totalBetAmount: 100 },
-        ],
-        users: [
-          { userId: 'user_201', name: 'David', imageProfile: 'https://randomuser.me/api/portraits/men/80.jpg' },
-          { userId: 'user_202', name: 'Eva', imageProfile: 'https://randomuser.me/api/portraits/women/81.jpg' },
-        ],
-      },
-    };
-
-    const result = potsAndUsers[gameId];
-
-    if (!result) {
-      const response = {
-        success: false,
-        message: `No pot or user data found for gameId ${gameId}`,
-        data: null,
+      const winningMessage = {
+        userId,
+        winningAmount: expectedWinningAmount[userId] // correct amount
       };
-      this.server.emit('teenpattiPotBetsAndUsersResponse', response);
-      return response;
-    }
+      if(socketId){
+        console.log("Emitted",socketId)
+      this.server.to(socketId).emit("toWinnerMessage", winningMessage);
+      }
+      try {
 
+        let submitFlowData = {
+          "betAmount": expectedWinningAmount[userId],
+          "type": 2,
+          "transactionId": uuidv4()
+        }
+        const baseURL = "http://127.0.0.1:4005/"
+        const endPoint = "admin/game/submitFlow";
+        const response = await axios.post(
+          `${baseURL}${endPoint}`, submitFlowData, {
+          headers: {
+            'Authorization': `Bearer ${winnerRecord.token}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 1000,
+        }
+        );
+        if (response.statusText == "OK") {
+          //added
+        } else {
+          console.log("Failed to add win amount")
+        }
+
+      } catch (error) {
+        if (error.response) {
+          console.log("Status:", error.response.status);
+          console.log("Message:", error.response.data);
+        } else {
+          console.log("Error:", error.message);
+        }
+      }
+    }
+    const winnersDbRecords = await masterPrisma.gameOngoingUsers.findMany({
+      where: {
+        userId: { in: winnerIds },  // winnerIds = Object.keys(expectedWinningAmount)
+      },
+      select: {
+        userId: true,
+        profilePicture: true,
+        // socketId: true,  
+      },
+    });
+    const winnersUserResponse = winnersDbRecords.map(user => ({
+      userId: user.userId,
+      amountWon: expectedWinningAmount[user.userId] || 0,
+      gameId: 16,
+      imageProfile: user.profilePicture || null,
+    }));
+
+    let potName;
+    if (winningPotIndex == 0) {
+      potName = "Pot 1"
+    } else if (winningPotIndex == 1) {
+      potName = "Pot 1"
+    } else if (winningPotIndex == 2) {
+      potName = "Pot 3"
+    }
+    // Public broadcast response
     const response = {
       success: true,
-      message: 'Game bets fetched successfully',
-      data: result,
+      message: 'Winners announced successfully',
+      data: {
+        winners: winnersUserResponse,
+        winningPot: potName,
+        winningPotIndex: winningPotIndex,
+        winningCards: [
+          'https://deckofcardsapi.com/static/img/AS.png',
+          'https://deckofcardsapi.com/static/img/2S.png',
+          'https://deckofcardsapi.com/static/img/3S.png',
+        ],
+        winningPotRankText: 'Pair',
+      },
     };
+    this.server.emit('teenpattiAnnounceGameResultResponse', response);
+    // refresh for next game
+     await masterPrisma.ongoingTeenpattiGame.deleteMany({});
 
-    this.server.emit('teenpattiPotBetsAndUsersResponse', response);
     return response;
   }
+
+  // @SubscribeMessage('teenpattiGameTableJoin')
+  // async gameTeenpattiJoin(
+  //  @ConnectedSocket() client: Socket, 
+  //   @MessageBody() user: any
+  // ) {  
+  //   const existingUser = this.Users.find(u => u.userId === user.userId);
+
+  //   if (!existingUser) {
+  //     this.Users.unshift(user);
+  //   } else {
+  //     console.log(`User ${user.name} already in game table`);
+  //   }
+  //   client.join('teenPattiGame');
+  //   this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', { 
+  //     users: this.Users 
+  //   });
+
+  //   return { success: true, users: this.Users };
+  // }
+ @SubscribeMessage('teenpattiGameTableJoin')
+async gameTeenpattiJoin(
+  @ConnectedSocket() client: Socket,
+  @MessageBody() user: { userId: string; name: string; imageProfile: string, appKey: string, token: string }
+) {
+  try {
+    // 1. Find user first
+    const updated = await masterPrisma.gameOngoingUsers.updateMany({
+    where: { userId: user.userId },
+    data: {
+      name: user.name,
+      profilePicture: user.imageProfile,
+      appKey: user.appKey,
+      token: user.token,
+    },
+  });
+    await masterPrisma.gameOngoingUsers.deleteMany({
+      where: {
+        appKey: null
+      }
+    });
+
+    // 3. Fetch updated users list
+    const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
+    // 4. Join room
+    client.join('teenPattiGame');
+
+    // 5. Emit updated list to room
+    this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', {
+      users: usersInGame,
+    });
+
+    // 6. Same response back
+    return { success: true, users: usersInGame };
+
+  } catch (err) {
+    console.error('Error saving/fetching users:', err.message);
+    return { success: false, users: [], message: 'Failed to save user' };
+  }
+}
+
+
+
+  // @SubscribeMessage('mySocketId')
+  // async mySocketId(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() data: any
+  // ) {
+  //   const { userId } = data;
+
+  //   // Find user
+  //   const userIndex = this.Users.findIndex(u => u.userId === userId);
+  //   if (userIndex === -1) {
+  //     return { success: false, message: "User not found" };
+  //   }
+  //     this.Users[userIndex].socketId = client.id;
+  //   client.emit("socketIdSaved", {
+  //     success: true,
+  //     user: this.Users[userIndex],
+  //   });
+
+  //   return {
+  //     success: true,
+  //     user: this.Users[userIndex]
+  //   };
+  // }
+  // @SubscribeMessage('mySocketId')
+  // async mySocketId(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() data: any
+  // ) {
+  //   const { userId } = data;
+
+  //   if (!userId) {
+  //     return { success: false, message: "userId is required" };
+  //   }
+
+  //   try {
+      // // Update the socketId for this user in master database
+      // const updatedUser = await masterPrisma.gameOngoingUsers.updateMany({
+      //   where: { userId },
+      //   data: { socketId: client.id },
+      // });
+
+      // // Fetch the updated user
+      // const user = await masterPrisma.gameOngoingUsers.findUnique({
+      //   where: { userId },
+      // });
+
+      // if (!user) {
+      //   return { success: false, message: "User not found in database" };
+      // }
+
+      // // Emit back to the socket
+      // client.emit("socketIdSaved", {
+      //   success: true,
+      //   user,
+      // });
+
+      // return {
+      //   success: true,
+      //   user,
+      // };
+
+  //   } catch (err) {
+  //     console.error("Failed to update socketId:", err);
+  //     return { success: false, message: "Failed to update socketId", error: err.message };
+  //   }
+  // }
+
+
+  // @SubscribeMessage('teenpattiGameTableLeave')
+  // async gameTeenpattiLeave(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() user: any
+  // ) {
+  //   this.Users = this.Users.filter(u => u.userId !== user.userId);
+  //   client.leave('teenPattiGame');
+
+  //   this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', { 
+  //     users: this.Users 
+  //   });
+
+  //   return { success: true, users: this.Users };
+  // }
+
+  @SubscribeMessage('teenpattiGameTableLeave')
+  async gameTeenpattiLeave(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() user: any
+  ) {
+    const { userId } = user;
+
+    if (!userId) {
+      return { success: false, message: "userId is required" };
+    }
+
+    try {
+      // Delete the user from the master database table
+      await masterPrisma.gameOngoingUsers.deleteMany({
+        where: { userId },
+      });
+      client.leave('teenPattiGame');
+
+      // Fetch remaining users to emit the updated table
+      const remainingUsers = await masterPrisma.gameOngoingUsers.findMany({
+        select: {
+          userId: true,
+          name: true,
+          profilePicture: true,
+        },
+      });
+
+      this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', {
+        users: remainingUsers,
+      });
+
+      return { success: true, users: remainingUsers };
+    } catch (err) {
+      console.error("Failed to remove user from database:", err);
+      return { success: false, message: "Failed to remove user", error: err.message };
+    }
+  }
+
+
+  // @SubscribeMessage('userUpdatedData')
+  // async getUserData() {
+  //   const response = {
+  //     success: true,
+  //     message: 'User data fetched successfully',
+  //     data: {
+  //       user: [
+  //         {
+  //           userId: 'user_123',
+  //           balance: 1500,
+  //           gameId: 16,
+  //           imageProfile: 'https://randomuser.me/api/portraits/men/75.jpg',
+  //         },
+  //         {
+  //           userId: 'user_345',
+  //           balance: 1500,
+  //           gameId: 16,
+  //           imageProfile: 'https://randomuser.me/api/portraits/men/75.jpg',
+  //         }
+  //       ],
+  //     },
+  //   };
+
+  //   if (this.server) {
+  //     this.server.emit('userUpdatedDataResponse', response);
+  //   }
+  //   return response;
+  // }
+
+  // @SubscribeMessage('teenpattiPotBetsAndUsers')
+  // async getPotBetsAndUsers(@MessageBody() { gameId }: { gameId: number }) {
+  //   const potsAndUsers = {
+  //     16: {
+  //       pots: [
+  //         { potName: 'pot1', betCoins: [50, 100, 100, 200, 500, 100, 50, 200], totalBetAmount: 1300 },
+  //         { potName: 'pot2', betCoins: [100, 100, 200, 50, 500, 100], totalBetAmount: 1050 },
+  //         { potName: 'pot3', betCoins: [50, 100, 100, 500, 200], totalBetAmount: 950 },
+  //       ],
+  //       users: this.Users,
+  //     },
+  //     42: {
+  //       pots: [
+  //         { potName: 'pot1', betCoins: [10, 50, 100, 200], totalBetAmount: 360 },
+  //         { potName: 'pot2', betCoins: [25, 25, 50], totalBetAmount: 100 },
+  //       ],
+  //       users: [
+  //         { userId: 'user_201', name: 'David', imageProfile: 'https://randomuser.me/api/portraits/men/80.jpg' },
+  //         { userId: 'user_202', name: 'Eva', imageProfile: 'https://randomuser.me/api/portraits/women/81.jpg' },
+  //       ],
+  //     },
+  //   };
+
+  //   const result = potsAndUsers[gameId];
+
+  //   if (!result) {
+  //     const response = {
+  //       success: false,
+  //       message: `No pot or user data found for gameId ${gameId}`,
+  //       data: null,
+  //     };
+  //     this.server.emit('teenpattiPotBetsAndUsersResponse', response);
+  //     return response;
+  //   }
+
+  //   const response = {
+  //     success: true,
+  //     message: 'Game bets fetched successfully',
+  //     data: result,
+  //   };
+
+  //   this.server.emit('teenpattiPotBetsAndUsersResponse', response);
+  //   return response;
+  // }
 }

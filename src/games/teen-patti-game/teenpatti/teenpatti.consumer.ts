@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { KafkaService } from 'src/kafka/kafka.service';
+import { masterPrisma } from 'src/prisma/masterClient';
 import { SocketGateway } from 'src/socket/socket.gateway';
 
 @Injectable()
@@ -42,24 +43,45 @@ export class TeenpattiConsumer implements OnModuleInit {
       if (!bet.userId || !bet.amount) {
         throw new Error('Invalid bet data');
       }
+      let potName;
+      if(bet.potIndex==0){
+        potName="Pot 1"
+      }else if(bet.potIndex==1){
+         potName="Pot 1"
+      }else if(bet.potIndex==2){
+         potName="Pot 3"
+      }
+      if(bet.gameId=='16'){
+        await masterPrisma.ongoingTeenpattiGame.create({
+        data: {
+          potIndex: bet.potIndex,
+          userId: bet.userId,
+          amount: bet.amount,
+          type: bet.betType,
+          potName:potName,
+          appKey: bet.appKey || null,
+        },
+      });
+      }
+      
       //api that call that app  and will bet user
       // console.log("bet:",bet)
       // 2. Run game logic (simulate processing)
-      const result = await this.runGameLogic(bet);
+      // const result = await this.runGameLogic(bet);
       //  console.log("result:",result)
       // 3. Update database (you'll implement this)
       // await this.saveBetToDatabase(bet, result);
 
       // 4. Broadcast result to all players at the table
-      this.socketGateway.broadcastBetResult(bet.tableId, {
-        betId: bet.betId,
-        userId: bet.userId,
-        amount: bet.amount,
-        result: result.outcome,
-        winAmount: result.winAmount,
-        timestamp: Date.now(),
-        processingTime: Date.now() - startTime,
-      });
+      // this.socketGateway.broadcastBetResult(bet.tableId, {
+      //   betId: bet.betId,
+      //   userId: bet.userId,
+      //   amount: bet.amount,
+      //   result: result.outcome,
+      //   winAmount: result.winAmount,
+      //   timestamp: Date.now(),
+      //   processingTime: Date.now() - startTime,
+      // });
 
       // 5. Log for monitoring
       this.processedCount++;
@@ -71,17 +93,17 @@ export class TeenpattiConsumer implements OnModuleInit {
     } catch (error) {
       this.processingErrors++;
       this.logger.error(
-        `❌ Error processing bet ${bet.betId}: ${error.message}`,
+        ` Error processing bet ${bet.betId}: ${error.message}`,
         error.stack,
       );
 
       // Notify user of error
-      this.socketGateway.broadcastToTable(bet.userId, 'betError', {
-        betId: bet.betId,
-        userId: bet.userId,
-        error: error.message,
-        timestamp: Date.now(),
-      });
+      // this.socketGateway.broadcastToTable(bet.userId, 'betError', {
+      //   betId: bet.betId,
+      //   userId: bet.userId,
+      //   error: error.message,
+      //   timestamp: Date.now(),
+      // });
     }
   }
 

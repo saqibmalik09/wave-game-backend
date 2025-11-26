@@ -17,7 +17,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "reset:master": "npx prisma migrate reset --schema=./prisma/master/schema.prisma --force",
+    "reset:tenant": "npx prisma migrate reset --schema=./prisma/tenant/schema.prisma --force",
+    "migrate:master": "npx prisma migrate dev --schema=./prisma/master/schema.prisma --name init_master",
+    "migrate:tenant": "npx prisma migrate dev --schema=./prisma/tenant/schema.prisma --name init_tenant"
+
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",

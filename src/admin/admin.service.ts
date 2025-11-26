@@ -16,6 +16,7 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { masterPrisma } from 'src/prisma/masterClient';
 
 
 @WebSocketGateway({
@@ -25,7 +26,7 @@ import { Server, Socket } from 'socket.io';
 })
 @Injectable()
 export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly master: PrismaService) {}
+  constructor(private readonly master: PrismaService) { }
   @WebSocketServer()
   server: Server;
 
@@ -50,29 +51,22 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
         user: dto.dbUser,
         password: dto.dbPassword,
       });
-
       await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dto.dbName}\`;`);
       await connection.end();
 
-      // 2️⃣ Deploy tenant migrations
+      // 2️⃣ Build tenant DB URL dynamically
       const tenantDbUrl = `mysql://${dto.dbUser}:${dto.dbPassword}@${dto.dbHost}:3306/${dto.dbName}`;
-      try {
-        execSync(`npx prisma migrate deploy --schema=prisma/tenant/schema.prisma`, {
-          stdio: 'inherit',
-          env: {
-            ...process.env,
-            DATABASE_URL: tenantDbUrl,
-          },
-        });
-      } catch (err) {
-        return errorResponse(
-          `Failed to run tenant migrations: ${err.message}`,
-          null,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
 
-      // 3️⃣ Save org in master DB
+      // 3️⃣ Run tenant migrations ONLY on this DB
+      execSync('npx prisma migrate deploy --schema=prisma/tenant/schema.prisma', {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          DATABASE_URL: tenantDbUrl, // override DATABASE_URL for this run
+        },
+      });
+
+      // 4️⃣ Save organization in master DB
       const org = await this.master.organization.create({
         data: {
           name: dto.name,
@@ -84,7 +78,7 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
         },
       });
 
-      // 4️⃣ Test tenant connection
+      // 5️⃣ Test tenant connection
       const tenantPrisma = await getTenantPrisma(org);
       await tenantPrisma.$connect();
       await tenantPrisma.$disconnect();
@@ -92,18 +86,18 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
       return successResponse(
         'Organization created & tenant DB ready',
         org,
-        HttpStatus.OK,
+        HttpStatus.OK
       );
     } catch (error) {
       return errorResponse(
         'Failed to create organization',
         error.message,
-        HttpStatus.NOT_ACCEPTABLE,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
-  // ✅ Get all organizations
+  //  Get all organizations
   async getAllOrganizations() {
     try {
       const orgs = await this.master.organization.findMany();
@@ -122,7 +116,7 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   // ✅ Get Tenant Users by Organization ID
-  async getTenantUsers(orgId: string) {
+  async getTenantUsers(orgId: number) {
     try {
       const org = await this.master.organization.findUnique({
         where: { id: orgId },
@@ -153,152 +147,140 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
       );
     }
   }
-
-@SubscribeMessage('gameConfiguration')
-async waveGameConfiguration( @MessageBody() { gameId }: { gameId: number }) {
- {
- const gameConfigs: Record<number, any> = {
-    16: {
-      gameId: 16,
-      bettingCoins: [100, 500, 1000,10000],
-      cardImages: [
-        ['https://deckofcardsapi.com/static/img/AS.png', 'https://deckofcardsapi.com/static/img/2S.png', 'https://deckofcardsapi.com/static/img/3S.png'],
-        ['https://deckofcardsapi.com/static/img/4S.png', 'https://deckofcardsapi.com/static/img/5S.png', 'https://deckofcardsapi.com/static/img/6S.png'],
-        ['https://deckofcardsapi.com/static/img/7S.png', 'https://deckofcardsapi.com/static/img/8S.png', 'https://deckofcardsapi.com/static/img/9S.png'],
-      ],
-      cardBackImages: [
-        ['https://deckofcardsapi.com/static/img/back.png', 'https://deckofcardsapi.com/static/img/back.png', 'https://deckofcardsapi.com/static/img/back.png'],
-        ['https://deckofcardsapi.com/static/img/back.png', 'https://deckofcardsapi.com/static/img/back.png', 'https://deckofcardsapi.com/static/img/back.png'],
-        ['https://deckofcardsapi.com/static/img/back.png', 'https://deckofcardsapi.com/static/img/back.png', 'https://deckofcardsapi.com/static/img/back.png'],
-      ],
-      dealerAvatar: 'https://i.pinimg.com/1200x/75/8e/93/758e934581866746e2c83d48c269f9a9.jpg',
-      tableBackgroundImage: 'https://cdn.hub88.io/onetouchlive/bg/ont_teenpatti20-20.jpg',
-      betButtonAndCardClickSound: `${process.env.APP_URL}/button-click.mp3`,
-      timerUpSound: `${process.env.APP_URL}/timer-up.mp3`,
-      cardsShuffleSound: `${process.env.APP_URL}/cards-shuffling.mp3`,
-      returnWinngingPotPercentage: [1.9, 2.0, 2.5],
-      colors: [ '#33ff66', '#3366ff', '#ffcc00','#9933ff'],
-      winningCalculationTime: 3000,
-      BettingTime: 40000,
-      nextBetWait: 5000,
-    },
-    2003: {
-      gameId: 2003,
-      bettingCoins: [5, 25, 50, 250, 500],
-      returnWinngingPotPercentage: [3.9, 1.0, 2.5],
-      colors: ['black', 'white', 'gold'],
-      winningCalculationTime: 3000,
-      BettingTime: 30000,
-      nextBetWait: 5000,
-    },
-    77: {
-      gameId: 77,
-      bettingCoins: [1, 2, 5, 10],
-      returnWinngingPotPercentage: [2.9, 3.0, 4.5],
-      colors: ['purple', 'orange'],
-      winningCalculationTime: 3000,
-      BettingTime: 30000,
-      nextBetWait: 5000,
-    },
-  };
-  if (!gameId || typeof gameId !== "number") {
-    const response = {
-      success: false,
-      message: "Invalid or missing gameId",
-      data: null,
-    };
-    this.server.emit("gameConfigurationResponse", response);
-    return response;
+  @SubscribeMessage('allGames')
+  async getAllGames() {
+    try {
+      const games = await masterPrisma.game.findMany();
+      return {
+        success: true,
+        message: 'All games fetched successfully',
+        data: games,
+      };
+    } catch (err) {
+      console.error('Error fetching all games:', err);
+      return {
+        success: false,
+        message: 'Failed to fetch games',
+        error: err.message,
+      };
+    }
   }
 
-  const gameConfig = gameConfigs[gameId];
+  @SubscribeMessage('gameConfiguration')
+  async waveGameConfiguration(@MessageBody() { gameId }: { gameId: number }) {
+    if (!gameId || typeof gameId !== 'number') {
+      const response = {
+        success: false,
+        message: 'Invalid or missing gameId',
+        data: null,
+      };
+      this.server.emit('gameConfigurationResponse', response);
+      return response;
+    }
 
-  if (!gameConfig) {
-    const response = {
-      success: false,
-      message: `No configuration found for gameId ${gameId}`,
-      data: null,
-    };
-    this.server.emit("gameConfigurationResponse", response);
-    return response;
+    try {
+      // Fetch only the config column from the database
+      const game = await masterPrisma.game.findUnique({
+        where: { id: gameId },
+        select: { config: true },
+      });
+
+      if (!game || !game.config) {
+        const response = {
+          success: false,
+          message: `No configuration found for gameId ${gameId}`,
+          data: null,
+        };
+        this.server.emit('gameConfigurationResponse', response);
+        return response;
+      }
+
+      const response = {
+        success: true,
+        message: 'Game configuration fetched successfully',
+        data: game.config, // return only the config JSON
+      };
+
+      // Emit the response to all clients or filter to a specific client as needed
+      this.server.emit('gameConfigurationResponse', response);
+      return response;
+    } catch (err) {
+      console.error(`Error fetching game configuration for ID ${gameId}:`, err);
+      const response = {
+        success: false,
+        message: 'Failed to fetch game configuration',
+        error: err.message,
+        data: null,
+      };
+      this.server.emit('gameConfigurationResponse', response);
+      return response;
+    }
   }
 
-  const response = {
-    success: true,
-    message: "Game configuration fetched successfully",
-    data: gameConfig,
-  };
-
-  // 🎯 Emit only to requesting client
-  this.server.emit("gameConfigurationResponse", response);
-
-  return response;
-}
-}
-@SubscribeMessage('tenantDetailsByAppKey')
-async tenantDetailsByAppKey(@MessageBody() body: { appKey: string }) {
- const appKey = body.appKey;
-  const appKeyConfigs: Record<string, any> = {
-    "Eeb1GshW3a": {
-      activeGames: "16,2003,77",
-      tanantName: "Ricolive",
-      tenantAppKey: "Eeb1GshW3a",
-      tenantProductionDomain: "127.0.0.0:4005",
-      tenantTestingDomain: "https://sandbox.ricolivee.vip/",
-      tenantPassword: "24563672ER",
-    },
-    "b1K7dw2MZ3": {
-      activeGames: "16,2003,77",
-      tanantName: "Banolive",
-      tenantAppKey: "b1K7dw2MZ3",
-      tenantProductionDomain: "https://banolive.com/",
-      tenantTestingDomain: "https://test.banolive.com/",
-      tenantPassword: "22578672ER",
-    },
-    "2FUSmZfG0A": {
-      activeGames: "16,2003,77",
-      tanantName: "Fruity",
-      tenantAppKey: "2FUSmZfG0A",
-      tenantProductionDomain: "https://fruitylivy.com/",
-      tenantTestingDomain: "https://socket.fruitylivy.com/",
-      tenantPassword: "4357983jf",
-    },
-  };
-  console.log("appKey:",appKey)
-  if (!appKey || typeof appKey !== "string") {
-    const response = {
-      success: false,
-      message: "Invalid or missing appKey",
-      data: null,
+  @SubscribeMessage('tenantDetailsByAppKey')
+  async tenantDetailsByAppKey(@MessageBody() body: { appKey: string }) {
+    const appKey = body.appKey;
+    const appKeyConfigs: Record<string, any> = {
+      "Eeb1GshW3a": {
+        activeGames: "16,2003,77",
+        tanantName: "Ricolive",
+        tenantAppKey: "Eeb1GshW3a",
+        tenantProductionDomain: "127.0.0.0:4005",
+        tenantTestingDomain: "https://sandbox.ricolivee.vip/",
+        tenantPassword: "24563672ER",
+      },
+      "b1K7dw2MZ3": {
+        activeGames: "16,2003,77",
+        tanantName: "Banolive",
+        tenantAppKey: "b1K7dw2MZ3",
+        tenantProductionDomain: "https://banolive.com/",
+        tenantTestingDomain: "https://test.banolive.com/",
+        tenantPassword: "22578672ER",
+      },
+      "2FUSmZfG0A": {
+        activeGames: "16,2003,77",
+        tanantName: "Fruity",
+        tenantAppKey: "2FUSmZfG0A",
+        tenantProductionDomain: "https://fruitylivy.com/",
+        tenantTestingDomain: "https://socket.fruitylivy.com/",
+        tenantPassword: "4357983jf",
+      },
     };
+    console.log("appKey:", appKey)
+    if (!appKey || typeof appKey !== "string") {
+      const response = {
+        success: false,
+        message: "Invalid or missing appKey",
+        data: null,
+      };
 
-    this.server.emit("tenantDetailsByAppKeyResponse", response);
-    return response;
-  }
-  const tenantDetails = appKeyConfigs[appKey];
+      this.server.emit("tenantDetailsByAppKeyResponse", response);
+      return response;
+    }
+    const tenantDetails = appKeyConfigs[appKey];
 
-  if (!tenantDetails) {
+    if (!tenantDetails) {
+      const response = {
+        success: false,
+        message: `No configuration found for tenant key ${appKey}`,
+        data: null,
+      };
+
+      this.server.emit("tenantDetailsByAppKeyResponse", response);
+      return response;
+    }
     const response = {
-      success: false,
-      message: `No configuration found for tenant key ${appKey}`,
-      data: null,
+      success: true,
+      message: "Tenant configuration fetched successfully",
+      data: tenantDetails,
     };
 
     this.server.emit("tenantDetailsByAppKeyResponse", response);
     return response;
   }
-  const response = {
-    success: true,
-    message: "Tenant configuration fetched successfully",
-    data: tenantDetails,
-  };
-
-  this.server.emit("tenantDetailsByAppKeyResponse", response);
-  return response;
-}
 
 
- private users = {
+  private users = {
     "token123": {
       id: "10144et4",
       name: "John Doe",
@@ -318,7 +300,7 @@ async tenantDetailsByAppKey(@MessageBody() body: { appKey: string }) {
       profilePicture: "https://randomuser.me/api/portraits/men/59.jpg",
     }
   };
-  
+
 
   async validateUserToken(token: string) {
     return this.users[token] || null;
@@ -326,6 +308,42 @@ async tenantDetailsByAppKey(@MessageBody() body: { appKey: string }) {
 
   async gameSubmitFlow(token: string) {
     return this.users[token] || null;
+  }
+
+
+  async createGameInMaster({
+    name,
+    description = null,
+    appKey = null,
+    token = null,
+    status = "active",
+    config = {},
+  }) {
+    try {
+      const newGame = await masterPrisma.game.create({
+        data: {
+          name,
+          description,
+          appKey,
+          token,
+          status,
+          config,  // 👈 FULL JSON stored exactly
+        },
+      });
+
+      return {
+        success: true,
+        message: "Game created successfully",
+        data: newGame,
+      };
+    } catch (err) {
+      console.error("Error creating game:", err);
+      return {
+        success: false,
+        message: "Failed to create game",
+        error: err.message,
+      };
+    }
   }
 
 }

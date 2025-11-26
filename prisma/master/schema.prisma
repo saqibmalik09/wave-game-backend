@@ -9,23 +9,97 @@ datasource db {
 }
 
 model Organization {
-  id        String   @id @default(uuid())
-  name      String
-  email     String
-  dbHost    String
-  dbName    String
-  dbUser    String
-  dbPassword String
-  status    String   @default("active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             Int             @id @default(autoincrement())
+  name           String
+  email          String          @unique
+  dbHost         String
+  dbName         String
+  dbUser         String
+  dbPassword     String
+  status         String          @default("active")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  administrators Administrator[]
 }
 
 model Administrator {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      String   @default("superadmin")
+  id             Int           @id @default(autoincrement())
+  email          String        @unique
+  password       String        @default("goldenSand")
+  role           String        @default("superadmin")
+  organizationId Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  userId    String?  
+  name      String?  
+  appKey    String?
+  totalGamePlayed  Int   @default(0)
+  gameWon  Int   @default(0)
+  gameLost  Int   @default(0)  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@index([appKey])
+}
+model Game {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  appKey      String?
+  token       String?
+  status      String   @default("active")
+  config      Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([appKey])
+}
+
+model Bet {
+  id        Int      @id @default(autoincrement())
+  gameId    Int
+  userId    String?      // must match User.id type
+  bet       Int?
+  type      Int?
+  appKey    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  @@index([gameId])
+  @@index([userId])
+}
+
+model GameOngoingUsers {
+  id        Int      @id @default(autoincrement())
+  userId    String   @unique
+  name      String?  
+  balance   String?  
+  appKey    String? 
+  token     String? 
+  connectionUserId     String?  
+  socketId   String?
+  profilePicture String? 
+  totalGamePlayed  Int   @default(0)
+  gameWon  Int   @default(0)
+  gameLost  Int   @default(0)
+   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([appKey])
+}
+model OngoingTeenpattiGame {
+  id             Int      @id @default(autoincrement())
+  potIndex       Int?
+  potName       String?
+  appKey         String?
+  userId         String?
+  amount         Int?
+  type           Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
 }
