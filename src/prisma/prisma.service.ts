@@ -36,7 +36,7 @@ export class PrismaService extends MasterPrisma implements OnModuleInit, OnModul
         if (stdout) this.logger.log(stdout);
         if (stderr) this.logger.error(stderr);
 
-        this.logger.log(`✅ Master schema migration applied successfully`);
+        this.logger.log(` Master schema migration applied successfully`);
       }
     } catch (err) {
       this.logger.error('❌ Error checking/creating database or migrating schema', err);

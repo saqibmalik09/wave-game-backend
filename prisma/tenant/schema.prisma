@@ -1,41 +1,44 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/tenant"
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/tenant"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+
+}
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
   username  String?
   password  String
-  role      String   @default("player")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
+  bets Bet[]
+
+  @@index([email])
+  @@index([username])
 }
 
-model Game {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  status      String   @default("active")
-  config      Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Match {
-  id        String   @id @default(uuid())
-  gameId    String
-  status    String   @default("pending")
-  metadata  Json?
-  startedAt DateTime?
-  endedAt   DateTime?
+model Bet {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  gameId    Int
+  bet       String?
+  type      Int?   
+  appKey    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relation
+  user User @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([gameId])
+  @@index([appKey])
 }

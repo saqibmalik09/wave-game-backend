@@ -19,15 +19,10 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
- * Model Game
+ * Model Bet
  * 
  */
-export type Game = $Result.DefaultSelection<Prisma.$GamePayload>
-/**
- * Model Match
- * 
- */
-export type Match = $Result.DefaultSelection<Prisma.$MatchPayload>
+export type Bet = $Result.DefaultSelection<Prisma.$BetPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -158,24 +153,14 @@ export class PrismaClient<
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.game`: Exposes CRUD operations for the **Game** model.
+   * `prisma.bet`: Exposes CRUD operations for the **Bet** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Games
-    * const games = await prisma.game.findMany()
+    * // Fetch zero or more Bets
+    * const bets = await prisma.bet.findMany()
     * ```
     */
-  get game(): Prisma.GameDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.match`: Exposes CRUD operations for the **Match** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Matches
-    * const matches = await prisma.match.findMany()
-    * ```
-    */
-  get match(): Prisma.MatchDelegate<ExtArgs, ClientOptions>;
+  get bet(): Prisma.BetDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -234,8 +219,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.16.2
-   * Query Engine version: 1c57fdcd7e44b29b9313256c76699e91c3ac3c43
+   * Prisma Client JS version: 6.19.0
+   * Query Engine version: 2ba551f319ab1df4bc874a89965d8b3641056773
    */
   export type PrismaVersion = {
     client: string
@@ -248,6 +233,7 @@ export namespace Prisma {
    */
 
 
+  export import Bytes = runtime.Bytes
   export import JsonObject = runtime.JsonObject
   export import JsonArray = runtime.JsonArray
   export import JsonValue = runtime.JsonValue
@@ -617,8 +603,7 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
-    Game: 'Game',
-    Match: 'Match'
+    Bet: 'Bet'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -637,7 +622,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "game" | "match"
+      modelProps: "user" | "bet"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -707,135 +692,69 @@ export namespace Prisma {
           }
         }
       }
-      Game: {
-        payload: Prisma.$GamePayload<ExtArgs>
-        fields: Prisma.GameFieldRefs
+      Bet: {
+        payload: Prisma.$BetPayload<ExtArgs>
+        fields: Prisma.BetFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.GameFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload> | null
+            args: Prisma.BetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.GameFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload>
+            args: Prisma.BetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload>
           }
           findFirst: {
-            args: Prisma.GameFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload> | null
+            args: Prisma.BetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.GameFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload>
+            args: Prisma.BetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload>
           }
           findMany: {
-            args: Prisma.GameFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload>[]
+            args: Prisma.BetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload>[]
           }
           create: {
-            args: Prisma.GameCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload>
+            args: Prisma.BetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload>
           }
           createMany: {
-            args: Prisma.GameCreateManyArgs<ExtArgs>
+            args: Prisma.BetCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           delete: {
-            args: Prisma.GameDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload>
+            args: Prisma.BetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload>
           }
           update: {
-            args: Prisma.GameUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload>
+            args: Prisma.BetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload>
           }
           deleteMany: {
-            args: Prisma.GameDeleteManyArgs<ExtArgs>
+            args: Prisma.BetDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.GameUpdateManyArgs<ExtArgs>
+            args: Prisma.BetUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           upsert: {
-            args: Prisma.GameUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GamePayload>
+            args: Prisma.BetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BetPayload>
           }
           aggregate: {
-            args: Prisma.GameAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateGame>
+            args: Prisma.BetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBet>
           }
           groupBy: {
-            args: Prisma.GameGroupByArgs<ExtArgs>
-            result: $Utils.Optional<GameGroupByOutputType>[]
+            args: Prisma.BetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BetGroupByOutputType>[]
           }
           count: {
-            args: Prisma.GameCountArgs<ExtArgs>
-            result: $Utils.Optional<GameCountAggregateOutputType> | number
-          }
-        }
-      }
-      Match: {
-        payload: Prisma.$MatchPayload<ExtArgs>
-        fields: Prisma.MatchFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.MatchFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.MatchFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload>
-          }
-          findFirst: {
-            args: Prisma.MatchFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.MatchFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload>
-          }
-          findMany: {
-            args: Prisma.MatchFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload>[]
-          }
-          create: {
-            args: Prisma.MatchCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload>
-          }
-          createMany: {
-            args: Prisma.MatchCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          delete: {
-            args: Prisma.MatchDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload>
-          }
-          update: {
-            args: Prisma.MatchUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload>
-          }
-          deleteMany: {
-            args: Prisma.MatchDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.MatchUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.MatchUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MatchPayload>
-          }
-          aggregate: {
-            args: Prisma.MatchAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateMatch>
-          }
-          groupBy: {
-            args: Prisma.MatchGroupByArgs<ExtArgs>
-            result: $Utils.Optional<MatchGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.MatchCountArgs<ExtArgs>
-            result: $Utils.Optional<MatchCountAggregateOutputType> | number
+            args: Prisma.BetCountArgs<ExtArgs>
+            result: $Utils.Optional<BetCountAggregateOutputType> | number
           }
         }
       }
@@ -936,8 +855,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
-    game?: GameOmit
-    match?: MatchOmit
+    bet?: BetOmit
   }
 
   /* Types for Logging */
@@ -1013,6 +931,36 @@ export namespace Prisma {
    */
 
 
+  /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    bets: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bets?: boolean | UserCountOutputTypeCountBetsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BetWhereInput
+  }
+
 
   /**
    * Models
@@ -1024,26 +972,34 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
 
+  export type UserAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    id: number | null
+  }
+
   export type UserMinAggregateOutputType = {
-    id: string | null
+    id: number | null
     email: string | null
     username: string | null
     password: string | null
-    role: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
-    id: string | null
+    id: number | null
     email: string | null
     username: string | null
     password: string | null
-    role: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1053,19 +1009,25 @@ export namespace Prisma {
     email: number
     username: number
     password: number
-    role: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
+  export type UserAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    id?: true
+  }
+
   export type UserMinAggregateInputType = {
     id?: true
     email?: true
     username?: true
     password?: true
-    role?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1075,7 +1037,6 @@ export namespace Prisma {
     email?: true
     username?: true
     password?: true
-    role?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1085,7 +1046,6 @@ export namespace Prisma {
     email?: true
     username?: true
     password?: true
-    role?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1129,6 +1089,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -1159,19 +1131,22 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
 
   export type UserGroupByOutputType = {
-    id: string
+    id: number
     email: string
     username: string | null
     password: string
-    role: string
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -1195,9 +1170,10 @@ export namespace Prisma {
     email?: boolean
     username?: boolean
     password?: boolean
-    role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    bets?: boolean | User$betsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
 
@@ -1207,22 +1183,26 @@ export namespace Prisma {
     email?: boolean
     username?: boolean
     password?: boolean
-    role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "password" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bets?: boolean | User$betsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
-    objects: {}
+    objects: {
+      bets: Prisma.$BetPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
-      id: string
+      id: number
       email: string
       username: string | null
       password: string
-      role: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -1565,6 +1545,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    bets<T extends User$betsArgs<ExtArgs> = {}>(args?: Subset<T, User$betsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1594,11 +1575,10 @@ export namespace Prisma {
    * Fields of the User model
    */
   interface UserFieldRefs {
-    readonly id: FieldRef<"User", 'String'>
+    readonly id: FieldRef<"User", 'Int'>
     readonly email: FieldRef<"User", 'String'>
     readonly username: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
-    readonly role: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -1618,6 +1598,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1636,6 +1620,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1653,6 +1641,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which User to fetch.
      */
@@ -1702,6 +1694,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where?: UserWhereInput
@@ -1750,6 +1746,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which Users to fetch.
      */
     where?: UserWhereInput
@@ -1793,6 +1793,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The data needed to create a User.
      */
     data: XOR<UserCreateInput, UserUncheckedCreateInput>
@@ -1821,6 +1825,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to update a User.
      */
@@ -1862,6 +1870,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The filter to search for the User to update in case it exists.
      */
     where: UserWhereUniqueInput
@@ -1888,6 +1900,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter which User to delete.
      */
     where: UserWhereUniqueInput
@@ -1908,6 +1924,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.bets
+   */
+  export type User$betsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bet
+     */
+    select?: BetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bet
+     */
+    omit?: BetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BetInclude<ExtArgs> | null
+    where?: BetWhereInput
+    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
+    cursor?: BetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1919,1259 +1959,419 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
   }
 
 
   /**
-   * Model Game
+   * Model Bet
    */
 
-  export type AggregateGame = {
-    _count: GameCountAggregateOutputType | null
-    _min: GameMinAggregateOutputType | null
-    _max: GameMaxAggregateOutputType | null
+  export type AggregateBet = {
+    _count: BetCountAggregateOutputType | null
+    _avg: BetAvgAggregateOutputType | null
+    _sum: BetSumAggregateOutputType | null
+    _min: BetMinAggregateOutputType | null
+    _max: BetMaxAggregateOutputType | null
   }
 
-  export type GameMinAggregateOutputType = {
-    id: string | null
-    name: string | null
-    description: string | null
-    status: string | null
+  export type BetAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    type: number | null
+  }
+
+  export type BetSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    type: number | null
+  }
+
+  export type BetMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    bet: string | null
+    type: number | null
+    appKey: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type GameMaxAggregateOutputType = {
-    id: string | null
-    name: string | null
-    description: string | null
-    status: string | null
+  export type BetMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    bet: string | null
+    type: number | null
+    appKey: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type GameCountAggregateOutputType = {
+  export type BetCountAggregateOutputType = {
     id: number
-    name: number
-    description: number
-    status: number
-    config: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type GameMinAggregateInputType = {
-    id?: true
-    name?: true
-    description?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type GameMaxAggregateInputType = {
-    id?: true
-    name?: true
-    description?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type GameCountAggregateInputType = {
-    id?: true
-    name?: true
-    description?: true
-    status?: true
-    config?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type GameAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Game to aggregate.
-     */
-    where?: GameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Games to fetch.
-     */
-    orderBy?: GameOrderByWithRelationInput | GameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: GameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Games from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Games.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Games
-    **/
-    _count?: true | GameCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: GameMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: GameMaxAggregateInputType
-  }
-
-  export type GetGameAggregateType<T extends GameAggregateArgs> = {
-        [P in keyof T & keyof AggregateGame]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateGame[P]>
-      : GetScalarType<T[P], AggregateGame[P]>
-  }
-
-
-
-
-  export type GameGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: GameWhereInput
-    orderBy?: GameOrderByWithAggregationInput | GameOrderByWithAggregationInput[]
-    by: GameScalarFieldEnum[] | GameScalarFieldEnum
-    having?: GameScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: GameCountAggregateInputType | true
-    _min?: GameMinAggregateInputType
-    _max?: GameMaxAggregateInputType
-  }
-
-  export type GameGroupByOutputType = {
-    id: string
-    name: string
-    description: string | null
-    status: string
-    config: JsonValue | null
-    createdAt: Date
-    updatedAt: Date
-    _count: GameCountAggregateOutputType | null
-    _min: GameMinAggregateOutputType | null
-    _max: GameMaxAggregateOutputType | null
-  }
-
-  type GetGameGroupByPayload<T extends GameGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<GameGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof GameGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], GameGroupByOutputType[P]>
-            : GetScalarType<T[P], GameGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type GameSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    status?: boolean
-    config?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["game"]>
-
-
-
-  export type GameSelectScalar = {
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    status?: boolean
-    config?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "status" | "config" | "createdAt" | "updatedAt", ExtArgs["result"]["game"]>
-
-  export type $GamePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Game"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      name: string
-      description: string | null
-      status: string
-      config: Prisma.JsonValue | null
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["game"]>
-    composites: {}
-  }
-
-  type GameGetPayload<S extends boolean | null | undefined | GameDefaultArgs> = $Result.GetResult<Prisma.$GamePayload, S>
-
-  type GameCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<GameFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: GameCountAggregateInputType | true
-    }
-
-  export interface GameDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Game'], meta: { name: 'Game' } }
-    /**
-     * Find zero or one Game that matches the filter.
-     * @param {GameFindUniqueArgs} args - Arguments to find a Game
-     * @example
-     * // Get one Game
-     * const game = await prisma.game.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends GameFindUniqueArgs>(args: SelectSubset<T, GameFindUniqueArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Game that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {GameFindUniqueOrThrowArgs} args - Arguments to find a Game
-     * @example
-     * // Get one Game
-     * const game = await prisma.game.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends GameFindUniqueOrThrowArgs>(args: SelectSubset<T, GameFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Game that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GameFindFirstArgs} args - Arguments to find a Game
-     * @example
-     * // Get one Game
-     * const game = await prisma.game.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends GameFindFirstArgs>(args?: SelectSubset<T, GameFindFirstArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Game that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GameFindFirstOrThrowArgs} args - Arguments to find a Game
-     * @example
-     * // Get one Game
-     * const game = await prisma.game.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends GameFindFirstOrThrowArgs>(args?: SelectSubset<T, GameFindFirstOrThrowArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Games that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GameFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Games
-     * const games = await prisma.game.findMany()
-     * 
-     * // Get first 10 Games
-     * const games = await prisma.game.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const gameWithIdOnly = await prisma.game.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends GameFindManyArgs>(args?: SelectSubset<T, GameFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Game.
-     * @param {GameCreateArgs} args - Arguments to create a Game.
-     * @example
-     * // Create one Game
-     * const Game = await prisma.game.create({
-     *   data: {
-     *     // ... data to create a Game
-     *   }
-     * })
-     * 
-     */
-    create<T extends GameCreateArgs>(args: SelectSubset<T, GameCreateArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Games.
-     * @param {GameCreateManyArgs} args - Arguments to create many Games.
-     * @example
-     * // Create many Games
-     * const game = await prisma.game.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends GameCreateManyArgs>(args?: SelectSubset<T, GameCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a Game.
-     * @param {GameDeleteArgs} args - Arguments to delete one Game.
-     * @example
-     * // Delete one Game
-     * const Game = await prisma.game.delete({
-     *   where: {
-     *     // ... filter to delete one Game
-     *   }
-     * })
-     * 
-     */
-    delete<T extends GameDeleteArgs>(args: SelectSubset<T, GameDeleteArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Game.
-     * @param {GameUpdateArgs} args - Arguments to update one Game.
-     * @example
-     * // Update one Game
-     * const game = await prisma.game.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends GameUpdateArgs>(args: SelectSubset<T, GameUpdateArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Games.
-     * @param {GameDeleteManyArgs} args - Arguments to filter Games to delete.
-     * @example
-     * // Delete a few Games
-     * const { count } = await prisma.game.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends GameDeleteManyArgs>(args?: SelectSubset<T, GameDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Games.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GameUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Games
-     * const game = await prisma.game.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends GameUpdateManyArgs>(args: SelectSubset<T, GameUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Game.
-     * @param {GameUpsertArgs} args - Arguments to update or create a Game.
-     * @example
-     * // Update or create a Game
-     * const game = await prisma.game.upsert({
-     *   create: {
-     *     // ... data to create a Game
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Game we want to update
-     *   }
-     * })
-     */
-    upsert<T extends GameUpsertArgs>(args: SelectSubset<T, GameUpsertArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Games.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GameCountArgs} args - Arguments to filter Games to count.
-     * @example
-     * // Count the number of Games
-     * const count = await prisma.game.count({
-     *   where: {
-     *     // ... the filter for the Games we want to count
-     *   }
-     * })
-    **/
-    count<T extends GameCountArgs>(
-      args?: Subset<T, GameCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], GameCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Game.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GameAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends GameAggregateArgs>(args: Subset<T, GameAggregateArgs>): Prisma.PrismaPromise<GetGameAggregateType<T>>
-
-    /**
-     * Group by Game.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GameGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends GameGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: GameGroupByArgs['orderBy'] }
-        : { orderBy?: GameGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, GameGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGameGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Game model
-   */
-  readonly fields: GameFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Game.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__GameClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Game model
-   */
-  interface GameFieldRefs {
-    readonly id: FieldRef<"Game", 'String'>
-    readonly name: FieldRef<"Game", 'String'>
-    readonly description: FieldRef<"Game", 'String'>
-    readonly status: FieldRef<"Game", 'String'>
-    readonly config: FieldRef<"Game", 'Json'>
-    readonly createdAt: FieldRef<"Game", 'DateTime'>
-    readonly updatedAt: FieldRef<"Game", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Game findUnique
-   */
-  export type GameFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * Filter, which Game to fetch.
-     */
-    where: GameWhereUniqueInput
-  }
-
-  /**
-   * Game findUniqueOrThrow
-   */
-  export type GameFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * Filter, which Game to fetch.
-     */
-    where: GameWhereUniqueInput
-  }
-
-  /**
-   * Game findFirst
-   */
-  export type GameFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * Filter, which Game to fetch.
-     */
-    where?: GameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Games to fetch.
-     */
-    orderBy?: GameOrderByWithRelationInput | GameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Games.
-     */
-    cursor?: GameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Games from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Games.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Games.
-     */
-    distinct?: GameScalarFieldEnum | GameScalarFieldEnum[]
-  }
-
-  /**
-   * Game findFirstOrThrow
-   */
-  export type GameFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * Filter, which Game to fetch.
-     */
-    where?: GameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Games to fetch.
-     */
-    orderBy?: GameOrderByWithRelationInput | GameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Games.
-     */
-    cursor?: GameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Games from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Games.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Games.
-     */
-    distinct?: GameScalarFieldEnum | GameScalarFieldEnum[]
-  }
-
-  /**
-   * Game findMany
-   */
-  export type GameFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * Filter, which Games to fetch.
-     */
-    where?: GameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Games to fetch.
-     */
-    orderBy?: GameOrderByWithRelationInput | GameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Games.
-     */
-    cursor?: GameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Games from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Games.
-     */
-    skip?: number
-    distinct?: GameScalarFieldEnum | GameScalarFieldEnum[]
-  }
-
-  /**
-   * Game create
-   */
-  export type GameCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * The data needed to create a Game.
-     */
-    data: XOR<GameCreateInput, GameUncheckedCreateInput>
-  }
-
-  /**
-   * Game createMany
-   */
-  export type GameCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Games.
-     */
-    data: GameCreateManyInput | GameCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Game update
-   */
-  export type GameUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * The data needed to update a Game.
-     */
-    data: XOR<GameUpdateInput, GameUncheckedUpdateInput>
-    /**
-     * Choose, which Game to update.
-     */
-    where: GameWhereUniqueInput
-  }
-
-  /**
-   * Game updateMany
-   */
-  export type GameUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Games.
-     */
-    data: XOR<GameUpdateManyMutationInput, GameUncheckedUpdateManyInput>
-    /**
-     * Filter which Games to update
-     */
-    where?: GameWhereInput
-    /**
-     * Limit how many Games to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Game upsert
-   */
-  export type GameUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * The filter to search for the Game to update in case it exists.
-     */
-    where: GameWhereUniqueInput
-    /**
-     * In case the Game found by the `where` argument doesn't exist, create a new Game with this data.
-     */
-    create: XOR<GameCreateInput, GameUncheckedCreateInput>
-    /**
-     * In case the Game was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<GameUpdateInput, GameUncheckedUpdateInput>
-  }
-
-  /**
-   * Game delete
-   */
-  export type GameDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-    /**
-     * Filter which Game to delete.
-     */
-    where: GameWhereUniqueInput
-  }
-
-  /**
-   * Game deleteMany
-   */
-  export type GameDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Games to delete
-     */
-    where?: GameWhereInput
-    /**
-     * Limit how many Games to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Game without action
-   */
-  export type GameDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Game
-     */
-    select?: GameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Game
-     */
-    omit?: GameOmit<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Match
-   */
-
-  export type AggregateMatch = {
-    _count: MatchCountAggregateOutputType | null
-    _min: MatchMinAggregateOutputType | null
-    _max: MatchMaxAggregateOutputType | null
-  }
-
-  export type MatchMinAggregateOutputType = {
-    id: string | null
-    gameId: string | null
-    status: string | null
-    startedAt: Date | null
-    endedAt: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type MatchMaxAggregateOutputType = {
-    id: string | null
-    gameId: string | null
-    status: string | null
-    startedAt: Date | null
-    endedAt: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type MatchCountAggregateOutputType = {
-    id: number
+    userId: number
     gameId: number
-    status: number
-    metadata: number
-    startedAt: number
-    endedAt: number
+    bet: number
+    type: number
+    appKey: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
-  export type MatchMinAggregateInputType = {
+  export type BetAvgAggregateInputType = {
     id?: true
+    userId?: true
     gameId?: true
-    status?: true
-    startedAt?: true
-    endedAt?: true
+    type?: true
+  }
+
+  export type BetSumAggregateInputType = {
+    id?: true
+    userId?: true
+    gameId?: true
+    type?: true
+  }
+
+  export type BetMinAggregateInputType = {
+    id?: true
+    userId?: true
+    gameId?: true
+    bet?: true
+    type?: true
+    appKey?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type MatchMaxAggregateInputType = {
+  export type BetMaxAggregateInputType = {
     id?: true
+    userId?: true
     gameId?: true
-    status?: true
-    startedAt?: true
-    endedAt?: true
+    bet?: true
+    type?: true
+    appKey?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type MatchCountAggregateInputType = {
+  export type BetCountAggregateInputType = {
     id?: true
+    userId?: true
     gameId?: true
-    status?: true
-    metadata?: true
-    startedAt?: true
-    endedAt?: true
+    bet?: true
+    type?: true
+    appKey?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type MatchAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Match to aggregate.
+     * Filter which Bet to aggregate.
      */
-    where?: MatchWhereInput
+    where?: BetWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Matches to fetch.
+     * Determine the order of Bets to fetch.
      */
-    orderBy?: MatchOrderByWithRelationInput | MatchOrderByWithRelationInput[]
+    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: MatchWhereUniqueInput
+    cursor?: BetWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Matches from the position of the cursor.
+     * Take `±n` Bets from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Matches.
+     * Skip the first `n` Bets.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Matches
+     * Count returned Bets
     **/
-    _count?: true | MatchCountAggregateInputType
+    _count?: true | BetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BetSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: MatchMinAggregateInputType
+    _min?: BetMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: MatchMaxAggregateInputType
+    _max?: BetMaxAggregateInputType
   }
 
-  export type GetMatchAggregateType<T extends MatchAggregateArgs> = {
-        [P in keyof T & keyof AggregateMatch]: P extends '_count' | 'count'
+  export type GetBetAggregateType<T extends BetAggregateArgs> = {
+        [P in keyof T & keyof AggregateBet]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateMatch[P]>
-      : GetScalarType<T[P], AggregateMatch[P]>
+        : GetScalarType<T[P], AggregateBet[P]>
+      : GetScalarType<T[P], AggregateBet[P]>
   }
 
 
 
 
-  export type MatchGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: MatchWhereInput
-    orderBy?: MatchOrderByWithAggregationInput | MatchOrderByWithAggregationInput[]
-    by: MatchScalarFieldEnum[] | MatchScalarFieldEnum
-    having?: MatchScalarWhereWithAggregatesInput
+  export type BetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BetWhereInput
+    orderBy?: BetOrderByWithAggregationInput | BetOrderByWithAggregationInput[]
+    by: BetScalarFieldEnum[] | BetScalarFieldEnum
+    having?: BetScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: MatchCountAggregateInputType | true
-    _min?: MatchMinAggregateInputType
-    _max?: MatchMaxAggregateInputType
+    _count?: BetCountAggregateInputType | true
+    _avg?: BetAvgAggregateInputType
+    _sum?: BetSumAggregateInputType
+    _min?: BetMinAggregateInputType
+    _max?: BetMaxAggregateInputType
   }
 
-  export type MatchGroupByOutputType = {
-    id: string
-    gameId: string
-    status: string
-    metadata: JsonValue | null
-    startedAt: Date | null
-    endedAt: Date | null
+  export type BetGroupByOutputType = {
+    id: number
+    userId: number
+    gameId: number
+    bet: string | null
+    type: number | null
+    appKey: string | null
     createdAt: Date
     updatedAt: Date
-    _count: MatchCountAggregateOutputType | null
-    _min: MatchMinAggregateOutputType | null
-    _max: MatchMaxAggregateOutputType | null
+    _count: BetCountAggregateOutputType | null
+    _avg: BetAvgAggregateOutputType | null
+    _sum: BetSumAggregateOutputType | null
+    _min: BetMinAggregateOutputType | null
+    _max: BetMaxAggregateOutputType | null
   }
 
-  type GetMatchGroupByPayload<T extends MatchGroupByArgs> = Prisma.PrismaPromise<
+  type GetBetGroupByPayload<T extends BetGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<MatchGroupByOutputType, T['by']> &
+      PickEnumerable<BetGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof MatchGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof BetGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], MatchGroupByOutputType[P]>
-            : GetScalarType<T[P], MatchGroupByOutputType[P]>
+              : GetScalarType<T[P], BetGroupByOutputType[P]>
+            : GetScalarType<T[P], BetGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type MatchSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type BetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
     gameId?: boolean
-    status?: boolean
-    metadata?: boolean
-    startedAt?: boolean
-    endedAt?: boolean
+    bet?: boolean
+    type?: boolean
+    appKey?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-  }, ExtArgs["result"]["match"]>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bet"]>
 
 
 
-  export type MatchSelectScalar = {
+  export type BetSelectScalar = {
     id?: boolean
+    userId?: boolean
     gameId?: boolean
-    status?: boolean
-    metadata?: boolean
-    startedAt?: boolean
-    endedAt?: boolean
+    bet?: boolean
+    type?: boolean
+    appKey?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type MatchOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "status" | "metadata" | "startedAt" | "endedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["match"]>
+  export type BetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "bet" | "type" | "appKey" | "createdAt" | "updatedAt", ExtArgs["result"]["bet"]>
+  export type BetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
 
-  export type $MatchPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Match"
-    objects: {}
+  export type $BetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Bet"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
     scalars: $Extensions.GetPayloadResult<{
-      id: string
-      gameId: string
-      status: string
-      metadata: Prisma.JsonValue | null
-      startedAt: Date | null
-      endedAt: Date | null
+      id: number
+      userId: number
+      gameId: number
+      bet: string | null
+      type: number | null
+      appKey: string | null
       createdAt: Date
       updatedAt: Date
-    }, ExtArgs["result"]["match"]>
+    }, ExtArgs["result"]["bet"]>
     composites: {}
   }
 
-  type MatchGetPayload<S extends boolean | null | undefined | MatchDefaultArgs> = $Result.GetResult<Prisma.$MatchPayload, S>
+  type BetGetPayload<S extends boolean | null | undefined | BetDefaultArgs> = $Result.GetResult<Prisma.$BetPayload, S>
 
-  type MatchCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<MatchFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: MatchCountAggregateInputType | true
+  type BetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BetFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BetCountAggregateInputType | true
     }
 
-  export interface MatchDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Match'], meta: { name: 'Match' } }
+  export interface BetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Bet'], meta: { name: 'Bet' } }
     /**
-     * Find zero or one Match that matches the filter.
-     * @param {MatchFindUniqueArgs} args - Arguments to find a Match
+     * Find zero or one Bet that matches the filter.
+     * @param {BetFindUniqueArgs} args - Arguments to find a Bet
      * @example
-     * // Get one Match
-     * const match = await prisma.match.findUnique({
+     * // Get one Bet
+     * const bet = await prisma.bet.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends MatchFindUniqueArgs>(args: SelectSubset<T, MatchFindUniqueArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends BetFindUniqueArgs>(args: SelectSubset<T, BetFindUniqueArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one Match that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Bet that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {MatchFindUniqueOrThrowArgs} args - Arguments to find a Match
+     * @param {BetFindUniqueOrThrowArgs} args - Arguments to find a Bet
      * @example
-     * // Get one Match
-     * const match = await prisma.match.findUniqueOrThrow({
+     * // Get one Bet
+     * const bet = await prisma.bet.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends MatchFindUniqueOrThrowArgs>(args: SelectSubset<T, MatchFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends BetFindUniqueOrThrowArgs>(args: SelectSubset<T, BetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Match that matches the filter.
+     * Find the first Bet that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {MatchFindFirstArgs} args - Arguments to find a Match
+     * @param {BetFindFirstArgs} args - Arguments to find a Bet
      * @example
-     * // Get one Match
-     * const match = await prisma.match.findFirst({
+     * // Get one Bet
+     * const bet = await prisma.bet.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends MatchFindFirstArgs>(args?: SelectSubset<T, MatchFindFirstArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends BetFindFirstArgs>(args?: SelectSubset<T, BetFindFirstArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Match that matches the filter or
+     * Find the first Bet that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {MatchFindFirstOrThrowArgs} args - Arguments to find a Match
+     * @param {BetFindFirstOrThrowArgs} args - Arguments to find a Bet
      * @example
-     * // Get one Match
-     * const match = await prisma.match.findFirstOrThrow({
+     * // Get one Bet
+     * const bet = await prisma.bet.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends MatchFindFirstOrThrowArgs>(args?: SelectSubset<T, MatchFindFirstOrThrowArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends BetFindFirstOrThrowArgs>(args?: SelectSubset<T, BetFindFirstOrThrowArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more Matches that matches the filter.
+     * Find zero or more Bets that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {MatchFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {BetFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Matches
-     * const matches = await prisma.match.findMany()
+     * // Get all Bets
+     * const bets = await prisma.bet.findMany()
      * 
-     * // Get first 10 Matches
-     * const matches = await prisma.match.findMany({ take: 10 })
+     * // Get first 10 Bets
+     * const bets = await prisma.bet.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const matchWithIdOnly = await prisma.match.findMany({ select: { id: true } })
+     * const betWithIdOnly = await prisma.bet.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends MatchFindManyArgs>(args?: SelectSubset<T, MatchFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends BetFindManyArgs>(args?: SelectSubset<T, BetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a Match.
-     * @param {MatchCreateArgs} args - Arguments to create a Match.
+     * Create a Bet.
+     * @param {BetCreateArgs} args - Arguments to create a Bet.
      * @example
-     * // Create one Match
-     * const Match = await prisma.match.create({
+     * // Create one Bet
+     * const Bet = await prisma.bet.create({
      *   data: {
-     *     // ... data to create a Match
+     *     // ... data to create a Bet
      *   }
      * })
      * 
      */
-    create<T extends MatchCreateArgs>(args: SelectSubset<T, MatchCreateArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends BetCreateArgs>(args: SelectSubset<T, BetCreateArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many Matches.
-     * @param {MatchCreateManyArgs} args - Arguments to create many Matches.
+     * Create many Bets.
+     * @param {BetCreateManyArgs} args - Arguments to create many Bets.
      * @example
-     * // Create many Matches
-     * const match = await prisma.match.createMany({
+     * // Create many Bets
+     * const bet = await prisma.bet.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends MatchCreateManyArgs>(args?: SelectSubset<T, MatchCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends BetCreateManyArgs>(args?: SelectSubset<T, BetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a Match.
-     * @param {MatchDeleteArgs} args - Arguments to delete one Match.
+     * Delete a Bet.
+     * @param {BetDeleteArgs} args - Arguments to delete one Bet.
      * @example
-     * // Delete one Match
-     * const Match = await prisma.match.delete({
+     * // Delete one Bet
+     * const Bet = await prisma.bet.delete({
      *   where: {
-     *     // ... filter to delete one Match
+     *     // ... filter to delete one Bet
      *   }
      * })
      * 
      */
-    delete<T extends MatchDeleteArgs>(args: SelectSubset<T, MatchDeleteArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends BetDeleteArgs>(args: SelectSubset<T, BetDeleteArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one Match.
-     * @param {MatchUpdateArgs} args - Arguments to update one Match.
+     * Update one Bet.
+     * @param {BetUpdateArgs} args - Arguments to update one Bet.
      * @example
-     * // Update one Match
-     * const match = await prisma.match.update({
+     * // Update one Bet
+     * const bet = await prisma.bet.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -3181,30 +2381,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends MatchUpdateArgs>(args: SelectSubset<T, MatchUpdateArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends BetUpdateArgs>(args: SelectSubset<T, BetUpdateArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more Matches.
-     * @param {MatchDeleteManyArgs} args - Arguments to filter Matches to delete.
+     * Delete zero or more Bets.
+     * @param {BetDeleteManyArgs} args - Arguments to filter Bets to delete.
      * @example
-     * // Delete a few Matches
-     * const { count } = await prisma.match.deleteMany({
+     * // Delete a few Bets
+     * const { count } = await prisma.bet.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends MatchDeleteManyArgs>(args?: SelectSubset<T, MatchDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends BetDeleteManyArgs>(args?: SelectSubset<T, BetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Matches.
+     * Update zero or more Bets.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {MatchUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {BetUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Matches
-     * const match = await prisma.match.updateMany({
+     * // Update many Bets
+     * const bet = await prisma.bet.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -3214,56 +2414,56 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends MatchUpdateManyArgs>(args: SelectSubset<T, MatchUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends BetUpdateManyArgs>(args: SelectSubset<T, BetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one Match.
-     * @param {MatchUpsertArgs} args - Arguments to update or create a Match.
+     * Create or update one Bet.
+     * @param {BetUpsertArgs} args - Arguments to update or create a Bet.
      * @example
-     * // Update or create a Match
-     * const match = await prisma.match.upsert({
+     * // Update or create a Bet
+     * const bet = await prisma.bet.upsert({
      *   create: {
-     *     // ... data to create a Match
+     *     // ... data to create a Bet
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the Match we want to update
+     *     // ... the filter for the Bet we want to update
      *   }
      * })
      */
-    upsert<T extends MatchUpsertArgs>(args: SelectSubset<T, MatchUpsertArgs<ExtArgs>>): Prisma__MatchClient<$Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends BetUpsertArgs>(args: SelectSubset<T, BetUpsertArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of Matches.
+     * Count the number of Bets.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {MatchCountArgs} args - Arguments to filter Matches to count.
+     * @param {BetCountArgs} args - Arguments to filter Bets to count.
      * @example
-     * // Count the number of Matches
-     * const count = await prisma.match.count({
+     * // Count the number of Bets
+     * const count = await prisma.bet.count({
      *   where: {
-     *     // ... the filter for the Matches we want to count
+     *     // ... the filter for the Bets we want to count
      *   }
      * })
     **/
-    count<T extends MatchCountArgs>(
-      args?: Subset<T, MatchCountArgs>,
+    count<T extends BetCountArgs>(
+      args?: Subset<T, BetCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], MatchCountAggregateOutputType>
+          : GetScalarType<T['select'], BetCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a Match.
+     * Allows you to perform aggregations operations on a Bet.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {MatchAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {BetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -3283,13 +2483,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends MatchAggregateArgs>(args: Subset<T, MatchAggregateArgs>): Prisma.PrismaPromise<GetMatchAggregateType<T>>
+    aggregate<T extends BetAggregateArgs>(args: Subset<T, BetAggregateArgs>): Prisma.PrismaPromise<GetBetAggregateType<T>>
 
     /**
-     * Group by Match.
+     * Group by Bet.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {MatchGroupByArgs} args - Group by arguments.
+     * @param {BetGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -3304,14 +2504,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends MatchGroupByArgs,
+      T extends BetGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: MatchGroupByArgs['orderBy'] }
-        : { orderBy?: MatchGroupByArgs['orderBy'] },
+        ? { orderBy: BetGroupByArgs['orderBy'] }
+        : { orderBy?: BetGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -3360,21 +2560,22 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, MatchGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMatchGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, BetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the Match model
+   * Fields of the Bet model
    */
-  readonly fields: MatchFieldRefs;
+  readonly fields: BetFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for Match.
+   * The delegate class that acts as a "Promise-like" for Bet.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__MatchClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__BetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3401,335 +2602,375 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the Match model
+   * Fields of the Bet model
    */
-  interface MatchFieldRefs {
-    readonly id: FieldRef<"Match", 'String'>
-    readonly gameId: FieldRef<"Match", 'String'>
-    readonly status: FieldRef<"Match", 'String'>
-    readonly metadata: FieldRef<"Match", 'Json'>
-    readonly startedAt: FieldRef<"Match", 'DateTime'>
-    readonly endedAt: FieldRef<"Match", 'DateTime'>
-    readonly createdAt: FieldRef<"Match", 'DateTime'>
-    readonly updatedAt: FieldRef<"Match", 'DateTime'>
+  interface BetFieldRefs {
+    readonly id: FieldRef<"Bet", 'Int'>
+    readonly userId: FieldRef<"Bet", 'Int'>
+    readonly gameId: FieldRef<"Bet", 'Int'>
+    readonly bet: FieldRef<"Bet", 'String'>
+    readonly type: FieldRef<"Bet", 'Int'>
+    readonly appKey: FieldRef<"Bet", 'String'>
+    readonly createdAt: FieldRef<"Bet", 'DateTime'>
+    readonly updatedAt: FieldRef<"Bet", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * Match findUnique
+   * Bet findUnique
    */
-  export type MatchFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * Filter, which Match to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where: MatchWhereUniqueInput
+    include?: BetInclude<ExtArgs> | null
+    /**
+     * Filter, which Bet to fetch.
+     */
+    where: BetWhereUniqueInput
   }
 
   /**
-   * Match findUniqueOrThrow
+   * Bet findUniqueOrThrow
    */
-  export type MatchFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * Filter, which Match to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where: MatchWhereUniqueInput
+    include?: BetInclude<ExtArgs> | null
+    /**
+     * Filter, which Bet to fetch.
+     */
+    where: BetWhereUniqueInput
   }
 
   /**
-   * Match findFirst
+   * Bet findFirst
    */
-  export type MatchFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * Filter, which Match to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: MatchWhereInput
+    include?: BetInclude<ExtArgs> | null
+    /**
+     * Filter, which Bet to fetch.
+     */
+    where?: BetWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Matches to fetch.
+     * Determine the order of Bets to fetch.
      */
-    orderBy?: MatchOrderByWithRelationInput | MatchOrderByWithRelationInput[]
+    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Matches.
+     * Sets the position for searching for Bets.
      */
-    cursor?: MatchWhereUniqueInput
+    cursor?: BetWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Matches from the position of the cursor.
+     * Take `±n` Bets from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Matches.
+     * Skip the first `n` Bets.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Matches.
+     * Filter by unique combinations of Bets.
      */
-    distinct?: MatchScalarFieldEnum | MatchScalarFieldEnum[]
+    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
   }
 
   /**
-   * Match findFirstOrThrow
+   * Bet findFirstOrThrow
    */
-  export type MatchFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * Filter, which Match to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: MatchWhereInput
+    include?: BetInclude<ExtArgs> | null
+    /**
+     * Filter, which Bet to fetch.
+     */
+    where?: BetWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Matches to fetch.
+     * Determine the order of Bets to fetch.
      */
-    orderBy?: MatchOrderByWithRelationInput | MatchOrderByWithRelationInput[]
+    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Matches.
+     * Sets the position for searching for Bets.
      */
-    cursor?: MatchWhereUniqueInput
+    cursor?: BetWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Matches from the position of the cursor.
+     * Take `±n` Bets from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Matches.
+     * Skip the first `n` Bets.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Matches.
+     * Filter by unique combinations of Bets.
      */
-    distinct?: MatchScalarFieldEnum | MatchScalarFieldEnum[]
+    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
   }
 
   /**
-   * Match findMany
+   * Bet findMany
    */
-  export type MatchFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * Filter, which Matches to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: MatchWhereInput
+    include?: BetInclude<ExtArgs> | null
+    /**
+     * Filter, which Bets to fetch.
+     */
+    where?: BetWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Matches to fetch.
+     * Determine the order of Bets to fetch.
      */
-    orderBy?: MatchOrderByWithRelationInput | MatchOrderByWithRelationInput[]
+    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Matches.
+     * Sets the position for listing Bets.
      */
-    cursor?: MatchWhereUniqueInput
+    cursor?: BetWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Matches from the position of the cursor.
+     * Take `±n` Bets from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Matches.
+     * Skip the first `n` Bets.
      */
     skip?: number
-    distinct?: MatchScalarFieldEnum | MatchScalarFieldEnum[]
+    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
   }
 
   /**
-   * Match create
+   * Bet create
    */
-  export type MatchCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * The data needed to create a Match.
+     * Choose, which related nodes to fetch as well
      */
-    data: XOR<MatchCreateInput, MatchUncheckedCreateInput>
+    include?: BetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Bet.
+     */
+    data: XOR<BetCreateInput, BetUncheckedCreateInput>
   }
 
   /**
-   * Match createMany
+   * Bet createMany
    */
-  export type MatchCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many Matches.
+     * The data used to create many Bets.
      */
-    data: MatchCreateManyInput | MatchCreateManyInput[]
+    data: BetCreateManyInput | BetCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * Match update
+   * Bet update
    */
-  export type MatchUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * The data needed to update a Match.
+     * Choose, which related nodes to fetch as well
      */
-    data: XOR<MatchUpdateInput, MatchUncheckedUpdateInput>
+    include?: BetInclude<ExtArgs> | null
     /**
-     * Choose, which Match to update.
+     * The data needed to update a Bet.
      */
-    where: MatchWhereUniqueInput
+    data: XOR<BetUpdateInput, BetUncheckedUpdateInput>
+    /**
+     * Choose, which Bet to update.
+     */
+    where: BetWhereUniqueInput
   }
 
   /**
-   * Match updateMany
+   * Bet updateMany
    */
-  export type MatchUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update Matches.
+     * The data used to update Bets.
      */
-    data: XOR<MatchUpdateManyMutationInput, MatchUncheckedUpdateManyInput>
+    data: XOR<BetUpdateManyMutationInput, BetUncheckedUpdateManyInput>
     /**
-     * Filter which Matches to update
+     * Filter which Bets to update
      */
-    where?: MatchWhereInput
+    where?: BetWhereInput
     /**
-     * Limit how many Matches to update.
+     * Limit how many Bets to update.
      */
     limit?: number
   }
 
   /**
-   * Match upsert
+   * Bet upsert
    */
-  export type MatchUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * The filter to search for the Match to update in case it exists.
+     * Choose, which related nodes to fetch as well
      */
-    where: MatchWhereUniqueInput
+    include?: BetInclude<ExtArgs> | null
     /**
-     * In case the Match found by the `where` argument doesn't exist, create a new Match with this data.
+     * The filter to search for the Bet to update in case it exists.
      */
-    create: XOR<MatchCreateInput, MatchUncheckedCreateInput>
+    where: BetWhereUniqueInput
     /**
-     * In case the Match was found with the provided `where` argument, update it with this data.
+     * In case the Bet found by the `where` argument doesn't exist, create a new Bet with this data.
      */
-    update: XOR<MatchUpdateInput, MatchUncheckedUpdateInput>
+    create: XOR<BetCreateInput, BetUncheckedCreateInput>
+    /**
+     * In case the Bet was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BetUpdateInput, BetUncheckedUpdateInput>
   }
 
   /**
-   * Match delete
+   * Bet delete
    */
-  export type MatchDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
     /**
-     * Filter which Match to delete.
+     * Choose, which related nodes to fetch as well
      */
-    where: MatchWhereUniqueInput
+    include?: BetInclude<ExtArgs> | null
+    /**
+     * Filter which Bet to delete.
+     */
+    where: BetWhereUniqueInput
   }
 
   /**
-   * Match deleteMany
+   * Bet deleteMany
    */
-  export type MatchDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Matches to delete
+     * Filter which Bets to delete
      */
-    where?: MatchWhereInput
+    where?: BetWhereInput
     /**
-     * Limit how many Matches to delete.
+     * Limit how many Bets to delete.
      */
     limit?: number
   }
 
   /**
-   * Match without action
+   * Bet without action
    */
-  export type MatchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Match
+     * Select specific fields to fetch from the Bet
      */
-    select?: MatchSelect<ExtArgs> | null
+    select?: BetSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Match
+     * Omit specific fields from the Bet
      */
-    omit?: MatchOmit<ExtArgs> | null
+    omit?: BetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BetInclude<ExtArgs> | null
   }
 
 
@@ -3752,7 +2993,6 @@ export namespace Prisma {
     email: 'email',
     username: 'username',
     password: 'password',
-    role: 'role',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -3760,31 +3000,18 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-  export const GameScalarFieldEnum: {
+  export const BetScalarFieldEnum: {
     id: 'id',
-    name: 'name',
-    description: 'description',
-    status: 'status',
-    config: 'config',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type GameScalarFieldEnum = (typeof GameScalarFieldEnum)[keyof typeof GameScalarFieldEnum]
-
-
-  export const MatchScalarFieldEnum: {
-    id: 'id',
+    userId: 'userId',
     gameId: 'gameId',
-    status: 'status',
-    metadata: 'metadata',
-    startedAt: 'startedAt',
-    endedAt: 'endedAt',
+    bet: 'bet',
+    type: 'type',
+    appKey: 'appKey',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type MatchScalarFieldEnum = (typeof MatchScalarFieldEnum)[keyof typeof MatchScalarFieldEnum]
+  export type BetScalarFieldEnum = (typeof BetScalarFieldEnum)[keyof typeof BetScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -3793,14 +3020,6 @@ export namespace Prisma {
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
-
-
-  export const NullableJsonNullValueInput: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull
-  };
-
-  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
   export const NullsOrder: {
@@ -3812,55 +3031,32 @@ export namespace Prisma {
 
 
   export const UserOrderByRelevanceFieldEnum: {
-    id: 'id',
     email: 'email',
     username: 'username',
-    password: 'password',
-    role: 'role'
+    password: 'password'
   };
 
   export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 
 
-  export const JsonNullValueFilter: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull,
-    AnyNull: typeof AnyNull
+  export const BetOrderByRelevanceFieldEnum: {
+    bet: 'bet',
+    appKey: 'appKey'
   };
 
-  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-  export const QueryMode: {
-    default: 'default',
-    insensitive: 'insensitive'
-  };
-
-  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
-  export const GameOrderByRelevanceFieldEnum: {
-    id: 'id',
-    name: 'name',
-    description: 'description',
-    status: 'status'
-  };
-
-  export type GameOrderByRelevanceFieldEnum = (typeof GameOrderByRelevanceFieldEnum)[keyof typeof GameOrderByRelevanceFieldEnum]
-
-
-  export const MatchOrderByRelevanceFieldEnum: {
-    id: 'id',
-    gameId: 'gameId',
-    status: 'status'
-  };
-
-  export type MatchOrderByRelevanceFieldEnum = (typeof MatchOrderByRelevanceFieldEnum)[keyof typeof MatchOrderByRelevanceFieldEnum]
+  export type BetOrderByRelevanceFieldEnum = (typeof BetOrderByRelevanceFieldEnum)[keyof typeof BetOrderByRelevanceFieldEnum]
 
 
   /**
    * Field references
    */
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
 
 
   /**
@@ -3878,23 +3074,9 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Json'
+   * Reference to a field of type 'Float'
    */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'QueryMode'
-   */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
   /**
    * Deep Input Types
@@ -3905,13 +3087,13 @@ export namespace Prisma {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    id?: StringFilter<"User"> | string
+    id?: IntFilter<"User"> | number
     email?: StringFilter<"User"> | string
     username?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
-    role?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    bets?: BetListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -3919,23 +3101,23 @@ export namespace Prisma {
     email?: SortOrder
     username?: SortOrderInput | SortOrder
     password?: SortOrder
-    role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    bets?: BetOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
+    id?: number
     email?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     username?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
-    role?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    bets?: BetListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -3943,373 +3125,246 @@ export namespace Prisma {
     email?: SortOrder
     username?: SortOrderInput | SortOrder
     password?: SortOrder
-    role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
     AND?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"User"> | string
+    id?: IntWithAggregatesFilter<"User"> | number
     email?: StringWithAggregatesFilter<"User"> | string
     username?: StringNullableWithAggregatesFilter<"User"> | string | null
     password?: StringWithAggregatesFilter<"User"> | string
-    role?: StringWithAggregatesFilter<"User"> | string
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
 
-  export type GameWhereInput = {
-    AND?: GameWhereInput | GameWhereInput[]
-    OR?: GameWhereInput[]
-    NOT?: GameWhereInput | GameWhereInput[]
-    id?: StringFilter<"Game"> | string
-    name?: StringFilter<"Game"> | string
-    description?: StringNullableFilter<"Game"> | string | null
-    status?: StringFilter<"Game"> | string
-    config?: JsonNullableFilter<"Game">
-    createdAt?: DateTimeFilter<"Game"> | Date | string
-    updatedAt?: DateTimeFilter<"Game"> | Date | string
+  export type BetWhereInput = {
+    AND?: BetWhereInput | BetWhereInput[]
+    OR?: BetWhereInput[]
+    NOT?: BetWhereInput | BetWhereInput[]
+    id?: IntFilter<"Bet"> | number
+    userId?: IntFilter<"Bet"> | number
+    gameId?: IntFilter<"Bet"> | number
+    bet?: StringNullableFilter<"Bet"> | string | null
+    type?: IntNullableFilter<"Bet"> | number | null
+    appKey?: StringNullableFilter<"Bet"> | string | null
+    createdAt?: DateTimeFilter<"Bet"> | Date | string
+    updatedAt?: DateTimeFilter<"Bet"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
-  export type GameOrderByWithRelationInput = {
+  export type BetOrderByWithRelationInput = {
     id?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    status?: SortOrder
-    config?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    bet?: SortOrderInput | SortOrder
+    type?: SortOrderInput | SortOrder
+    appKey?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _relevance?: GameOrderByRelevanceInput
+    user?: UserOrderByWithRelationInput
+    _relevance?: BetOrderByRelevanceInput
   }
 
-  export type GameWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: GameWhereInput | GameWhereInput[]
-    OR?: GameWhereInput[]
-    NOT?: GameWhereInput | GameWhereInput[]
-    name?: StringFilter<"Game"> | string
-    description?: StringNullableFilter<"Game"> | string | null
-    status?: StringFilter<"Game"> | string
-    config?: JsonNullableFilter<"Game">
-    createdAt?: DateTimeFilter<"Game"> | Date | string
-    updatedAt?: DateTimeFilter<"Game"> | Date | string
+  export type BetWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: BetWhereInput | BetWhereInput[]
+    OR?: BetWhereInput[]
+    NOT?: BetWhereInput | BetWhereInput[]
+    userId?: IntFilter<"Bet"> | number
+    gameId?: IntFilter<"Bet"> | number
+    bet?: StringNullableFilter<"Bet"> | string | null
+    type?: IntNullableFilter<"Bet"> | number | null
+    appKey?: StringNullableFilter<"Bet"> | string | null
+    createdAt?: DateTimeFilter<"Bet"> | Date | string
+    updatedAt?: DateTimeFilter<"Bet"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
-  export type GameOrderByWithAggregationInput = {
+  export type BetOrderByWithAggregationInput = {
     id?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    status?: SortOrder
-    config?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: GameCountOrderByAggregateInput
-    _max?: GameMaxOrderByAggregateInput
-    _min?: GameMinOrderByAggregateInput
-  }
-
-  export type GameScalarWhereWithAggregatesInput = {
-    AND?: GameScalarWhereWithAggregatesInput | GameScalarWhereWithAggregatesInput[]
-    OR?: GameScalarWhereWithAggregatesInput[]
-    NOT?: GameScalarWhereWithAggregatesInput | GameScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Game"> | string
-    name?: StringWithAggregatesFilter<"Game"> | string
-    description?: StringNullableWithAggregatesFilter<"Game"> | string | null
-    status?: StringWithAggregatesFilter<"Game"> | string
-    config?: JsonNullableWithAggregatesFilter<"Game">
-    createdAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
-  }
-
-  export type MatchWhereInput = {
-    AND?: MatchWhereInput | MatchWhereInput[]
-    OR?: MatchWhereInput[]
-    NOT?: MatchWhereInput | MatchWhereInput[]
-    id?: StringFilter<"Match"> | string
-    gameId?: StringFilter<"Match"> | string
-    status?: StringFilter<"Match"> | string
-    metadata?: JsonNullableFilter<"Match">
-    startedAt?: DateTimeNullableFilter<"Match"> | Date | string | null
-    endedAt?: DateTimeNullableFilter<"Match"> | Date | string | null
-    createdAt?: DateTimeFilter<"Match"> | Date | string
-    updatedAt?: DateTimeFilter<"Match"> | Date | string
-  }
-
-  export type MatchOrderByWithRelationInput = {
-    id?: SortOrder
+    userId?: SortOrder
     gameId?: SortOrder
-    status?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    startedAt?: SortOrderInput | SortOrder
-    endedAt?: SortOrderInput | SortOrder
+    bet?: SortOrderInput | SortOrder
+    type?: SortOrderInput | SortOrder
+    appKey?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _relevance?: MatchOrderByRelevanceInput
+    _count?: BetCountOrderByAggregateInput
+    _avg?: BetAvgOrderByAggregateInput
+    _max?: BetMaxOrderByAggregateInput
+    _min?: BetMinOrderByAggregateInput
+    _sum?: BetSumOrderByAggregateInput
   }
 
-  export type MatchWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: MatchWhereInput | MatchWhereInput[]
-    OR?: MatchWhereInput[]
-    NOT?: MatchWhereInput | MatchWhereInput[]
-    gameId?: StringFilter<"Match"> | string
-    status?: StringFilter<"Match"> | string
-    metadata?: JsonNullableFilter<"Match">
-    startedAt?: DateTimeNullableFilter<"Match"> | Date | string | null
-    endedAt?: DateTimeNullableFilter<"Match"> | Date | string | null
-    createdAt?: DateTimeFilter<"Match"> | Date | string
-    updatedAt?: DateTimeFilter<"Match"> | Date | string
-  }, "id">
-
-  export type MatchOrderByWithAggregationInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    status?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    startedAt?: SortOrderInput | SortOrder
-    endedAt?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: MatchCountOrderByAggregateInput
-    _max?: MatchMaxOrderByAggregateInput
-    _min?: MatchMinOrderByAggregateInput
-  }
-
-  export type MatchScalarWhereWithAggregatesInput = {
-    AND?: MatchScalarWhereWithAggregatesInput | MatchScalarWhereWithAggregatesInput[]
-    OR?: MatchScalarWhereWithAggregatesInput[]
-    NOT?: MatchScalarWhereWithAggregatesInput | MatchScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Match"> | string
-    gameId?: StringWithAggregatesFilter<"Match"> | string
-    status?: StringWithAggregatesFilter<"Match"> | string
-    metadata?: JsonNullableWithAggregatesFilter<"Match">
-    startedAt?: DateTimeNullableWithAggregatesFilter<"Match"> | Date | string | null
-    endedAt?: DateTimeNullableWithAggregatesFilter<"Match"> | Date | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"Match"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Match"> | Date | string
+  export type BetScalarWhereWithAggregatesInput = {
+    AND?: BetScalarWhereWithAggregatesInput | BetScalarWhereWithAggregatesInput[]
+    OR?: BetScalarWhereWithAggregatesInput[]
+    NOT?: BetScalarWhereWithAggregatesInput | BetScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Bet"> | number
+    userId?: IntWithAggregatesFilter<"Bet"> | number
+    gameId?: IntWithAggregatesFilter<"Bet"> | number
+    bet?: StringNullableWithAggregatesFilter<"Bet"> | string | null
+    type?: IntNullableWithAggregatesFilter<"Bet"> | number | null
+    appKey?: StringNullableWithAggregatesFilter<"Bet"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Bet"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Bet"> | Date | string
   }
 
   export type UserCreateInput = {
-    id?: string
     email: string
     username?: string | null
     password: string
-    role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    bets?: BetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
-    id?: string
+    id?: number
     email: string
     username?: string | null
     password: string
-    role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    bets?: BetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bets?: BetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bets?: BetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
-    id?: string
+    id?: number
     email: string
     username?: string | null
     password: string
-    role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type UserUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type GameCreateInput = {
-    id?: string
-    name: string
-    description?: string | null
-    status?: string
-    config?: NullableJsonNullValueInput | InputJsonValue
+  export type BetCreateInput = {
+    gameId: number
+    bet?: string | null
+    type?: number | null
+    appKey?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBetsInput
+  }
+
+  export type BetUncheckedCreateInput = {
+    id?: number
+    userId: number
+    gameId: number
+    bet?: string | null
+    type?: number | null
+    appKey?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type GameUncheckedCreateInput = {
-    id?: string
-    name: string
-    description?: string | null
-    status?: string
-    config?: NullableJsonNullValueInput | InputJsonValue
+  export type BetUpdateInput = {
+    gameId?: IntFieldUpdateOperationsInput | number
+    bet?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableIntFieldUpdateOperationsInput | number | null
+    appKey?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBetsNestedInput
+  }
+
+  export type BetUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    bet?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableIntFieldUpdateOperationsInput | number | null
+    appKey?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BetCreateManyInput = {
+    id?: number
+    userId: number
+    gameId: number
+    bet?: string | null
+    type?: number | null
+    appKey?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type GameUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    config?: NullableJsonNullValueInput | InputJsonValue
+  export type BetUpdateManyMutationInput = {
+    gameId?: IntFieldUpdateOperationsInput | number
+    bet?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableIntFieldUpdateOperationsInput | number | null
+    appKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type GameUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    config?: NullableJsonNullValueInput | InputJsonValue
+  export type BetUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    bet?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableIntFieldUpdateOperationsInput | number | null
+    appKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type GameCreateManyInput = {
-    id?: string
-    name: string
-    description?: string | null
-    status?: string
-    config?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type GameUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    config?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type GameUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    config?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type MatchCreateInput = {
-    id?: string
-    gameId: string
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    startedAt?: Date | string | null
-    endedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type MatchUncheckedCreateInput = {
-    id?: string
-    gameId: string
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    startedAt?: Date | string | null
-    endedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type MatchUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    gameId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type MatchUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    gameId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type MatchCreateManyInput = {
-    id?: string
-    gameId: string
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    startedAt?: Date | string | null
-    endedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type MatchUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    gameId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type MatchUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    gameId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -4353,9 +3408,19 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type BetListRelationFilter = {
+    every?: BetWhereInput
+    some?: BetWhereInput
+    none?: BetWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type BetOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserOrderByRelevanceInput = {
@@ -4369,9 +3434,12 @@ export namespace Prisma {
     email?: SortOrder
     username?: SortOrder
     password?: SortOrder
-    role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    id?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -4379,7 +3447,6 @@ export namespace Prisma {
     email?: SortOrder
     username?: SortOrder
     password?: SortOrder
-    role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4389,9 +3456,28 @@ export namespace Prisma {
     email?: SortOrder
     username?: SortOrder
     password?: SortOrder
-    role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -4443,150 +3529,104 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
-  export type JsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue
-    lte?: InputJsonValue
-    gt?: InputJsonValue
-    gte?: InputJsonValue
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type GameOrderByRelevanceInput = {
-    fields: GameOrderByRelevanceFieldEnum | GameOrderByRelevanceFieldEnum[]
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type BetOrderByRelevanceInput = {
+    fields: BetOrderByRelevanceFieldEnum | BetOrderByRelevanceFieldEnum[]
     sort: SortOrder
     search: string
   }
 
-  export type GameCountOrderByAggregateInput = {
+  export type BetCountOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    status?: SortOrder
-    config?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    bet?: SortOrder
+    type?: SortOrder
+    appKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type GameMaxOrderByAggregateInput = {
+  export type BetAvgOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    status?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    type?: SortOrder
+  }
+
+  export type BetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    bet?: SortOrder
+    type?: SortOrder
+    appKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type GameMinOrderByAggregateInput = {
+  export type BetMinOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    status?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    bet?: SortOrder
+    type?: SortOrder
+    appKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue
-    lte?: InputJsonValue
-    gt?: InputJsonValue
-    gte?: InputJsonValue
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type BetSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    type?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
     _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  export type BetCreateNestedManyWithoutUserInput = {
+    create?: XOR<BetCreateWithoutUserInput, BetUncheckedCreateWithoutUserInput> | BetCreateWithoutUserInput[] | BetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BetCreateOrConnectWithoutUserInput | BetCreateOrConnectWithoutUserInput[]
+    createMany?: BetCreateManyUserInputEnvelope
+    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
   }
 
-  export type MatchOrderByRelevanceInput = {
-    fields: MatchOrderByRelevanceFieldEnum | MatchOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
-  export type MatchCountOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    status?: SortOrder
-    metadata?: SortOrder
-    startedAt?: SortOrder
-    endedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type MatchMaxOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    status?: SortOrder
-    startedAt?: SortOrder
-    endedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type MatchMinOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    status?: SortOrder
-    startedAt?: SortOrder
-    endedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  export type BetUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<BetCreateWithoutUserInput, BetUncheckedCreateWithoutUserInput> | BetCreateWithoutUserInput[] | BetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BetCreateOrConnectWithoutUserInput | BetCreateOrConnectWithoutUserInput[]
+    createMany?: BetCreateManyUserInputEnvelope
+    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -4601,8 +3641,73 @@ export namespace Prisma {
     set?: Date | string
   }
 
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
+  export type BetUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BetCreateWithoutUserInput, BetUncheckedCreateWithoutUserInput> | BetCreateWithoutUserInput[] | BetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BetCreateOrConnectWithoutUserInput | BetCreateOrConnectWithoutUserInput[]
+    upsert?: BetUpsertWithWhereUniqueWithoutUserInput | BetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BetCreateManyUserInputEnvelope
+    set?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    disconnect?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    delete?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    update?: BetUpdateWithWhereUniqueWithoutUserInput | BetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BetUpdateManyWithWhereWithoutUserInput | BetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BetScalarWhereInput | BetScalarWhereInput[]
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type BetUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BetCreateWithoutUserInput, BetUncheckedCreateWithoutUserInput> | BetCreateWithoutUserInput[] | BetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BetCreateOrConnectWithoutUserInput | BetCreateOrConnectWithoutUserInput[]
+    upsert?: BetUpsertWithWhereUniqueWithoutUserInput | BetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BetCreateManyUserInputEnvelope
+    set?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    disconnect?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    delete?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
+    update?: BetUpdateWithWhereUniqueWithoutUserInput | BetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BetUpdateManyWithWhereWithoutUserInput | BetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BetScalarWhereInput | BetScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutBetsInput = {
+    create?: XOR<UserCreateWithoutBetsInput, UserUncheckedCreateWithoutBetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBetsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneRequiredWithoutBetsNestedInput = {
+    create?: XOR<UserCreateWithoutBetsInput, UserUncheckedCreateWithoutBetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBetsInput
+    upsert?: UserUpsertWithoutBetsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBetsInput, UserUpdateWithoutBetsInput>, UserUncheckedUpdateWithoutBetsInput>
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -4646,6 +3751,33 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -4662,17 +3794,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -4717,53 +3838,180 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
-  export type NestedJsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
 
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue
-    lte?: InputJsonValue
-    gt?: InputJsonValue
-    gte?: InputJsonValue
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
     _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type BetCreateWithoutUserInput = {
+    gameId: number
+    bet?: string | null
+    type?: number | null
+    appKey?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BetUncheckedCreateWithoutUserInput = {
+    id?: number
+    gameId: number
+    bet?: string | null
+    type?: number | null
+    appKey?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BetCreateOrConnectWithoutUserInput = {
+    where: BetWhereUniqueInput
+    create: XOR<BetCreateWithoutUserInput, BetUncheckedCreateWithoutUserInput>
+  }
+
+  export type BetCreateManyUserInputEnvelope = {
+    data: BetCreateManyUserInput | BetCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BetUpsertWithWhereUniqueWithoutUserInput = {
+    where: BetWhereUniqueInput
+    update: XOR<BetUpdateWithoutUserInput, BetUncheckedUpdateWithoutUserInput>
+    create: XOR<BetCreateWithoutUserInput, BetUncheckedCreateWithoutUserInput>
+  }
+
+  export type BetUpdateWithWhereUniqueWithoutUserInput = {
+    where: BetWhereUniqueInput
+    data: XOR<BetUpdateWithoutUserInput, BetUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BetUpdateManyWithWhereWithoutUserInput = {
+    where: BetScalarWhereInput
+    data: XOR<BetUpdateManyMutationInput, BetUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type BetScalarWhereInput = {
+    AND?: BetScalarWhereInput | BetScalarWhereInput[]
+    OR?: BetScalarWhereInput[]
+    NOT?: BetScalarWhereInput | BetScalarWhereInput[]
+    id?: IntFilter<"Bet"> | number
+    userId?: IntFilter<"Bet"> | number
+    gameId?: IntFilter<"Bet"> | number
+    bet?: StringNullableFilter<"Bet"> | string | null
+    type?: IntNullableFilter<"Bet"> | number | null
+    appKey?: StringNullableFilter<"Bet"> | string | null
+    createdAt?: DateTimeFilter<"Bet"> | Date | string
+    updatedAt?: DateTimeFilter<"Bet"> | Date | string
+  }
+
+  export type UserCreateWithoutBetsInput = {
+    email: string
+    username?: string | null
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserUncheckedCreateWithoutBetsInput = {
+    id?: number
+    email: string
+    username?: string | null
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserCreateOrConnectWithoutBetsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBetsInput, UserUncheckedCreateWithoutBetsInput>
+  }
+
+  export type UserUpsertWithoutBetsInput = {
+    update: XOR<UserUpdateWithoutBetsInput, UserUncheckedUpdateWithoutBetsInput>
+    create: XOR<UserCreateWithoutBetsInput, UserUncheckedCreateWithoutBetsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBetsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBetsInput, UserUncheckedUpdateWithoutBetsInput>
+  }
+
+  export type UserUpdateWithoutBetsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUncheckedUpdateWithoutBetsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BetCreateManyUserInput = {
+    id?: number
+    gameId: number
+    bet?: string | null
+    type?: number | null
+    appKey?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BetUpdateWithoutUserInput = {
+    gameId?: IntFieldUpdateOperationsInput | number
+    bet?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableIntFieldUpdateOperationsInput | number | null
+    appKey?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BetUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    bet?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableIntFieldUpdateOperationsInput | number | null
+    appKey?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BetUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    bet?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableIntFieldUpdateOperationsInput | number | null
+    appKey?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

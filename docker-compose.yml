@@ -4,12 +4,150 @@ services:
     container_name: wave-games-backend-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root         # required
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: wave-games-database
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.2
+    container_name: wave-games-backend-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  # Kafka in KRaft mode (no Zookeeper needed)
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    hostname: kafka
+    restart: always
+    user: root
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      # KRaft mode configuration
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      
+      # Listener configuration
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      
+      # Cluster and log configuration
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      
+      # Performance tuning for high load (100k users)
+      KAFKA_NUM_NETWORK_THREADS: 8
+      KAFKA_NUM_IO_THREADS: 16
+      KAFKA_SOCKET_SEND_BUFFER_BYTES: 1048576
+      KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: 1048576
+      KAFKA_SOCKET_REQUEST_MAX_BYTES: 104857600
+      
+      # Partitions and replication
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      
+      # Log retention and segment settings
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+      
+      # Auto topic creation (set to true for development)
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      
+      # Producer/Consumer settings
+      KAFKA_COMPRESSION_TYPE: 'gzip'
+      KAFKA_MESSAGE_MAX_BYTES: 10485760
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485760
+      
+      # Connection limits
+      KAFKA_MAX_CONNECTIONS_PER_IP: 1000
+      KAFKA_MAX_CONNECTIONS: 10000
+      
+      # Consumer group settings
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+      KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: 300000
+      
+      # JVM heap settings for high load
+      KAFKA_HEAP_OPTS: '-Xmx2G -Xms2G'
+      
+      # Metrics and monitoring
+      KAFKA_METRIC_REPORTERS: ''
+      KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
+      
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    command: >
+      bash -c "
+      chmod -R 777 /var/lib/kafka/data &&
+      kafka-storage format -t MkU3OEVBNTcwNTJENDM2Qk -c /etc/kafka/docker/server.properties 2>/dev/null || true &&
+      /etc/confluent/docker/run
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    networks:
+      - app-network
+
+  # Kafka UI for monitoring and management
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    restart: always
+    ports:
+      - "8082:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: wave-games-kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      AUTH_TYPE: "DISABLED"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: wave-games-phpmyadmin
+    restart: always
+    ports:
+      - "8091:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+   
 
 volumes:
   mysql-data:
+  kafka_data:
+
+networks:
+  app-network:
+    driver: bridge
