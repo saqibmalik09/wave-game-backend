@@ -10,7 +10,7 @@ interface SubmitFlowDto {
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) { }
 
   // ---------------- Create Organization ----------------
   @Post('organizations')
@@ -72,7 +72,7 @@ export class AdminController {
             dbName: 'acme_games_db',
             dbHost: 'localhost',
           },
-         
+
         ],
       },
     },
@@ -80,7 +80,7 @@ export class AdminController {
   async getAllOrganizations() {
     return this.adminService.getAllOrganizations();
   }
-  
+
   @Get('organizations/:orgId/users')
   @ApiOperation({ summary: 'Get all users for a specific tenant (organization)' })
   @ApiParam({ name: 'orgId', description: 'Organization ID' })
@@ -105,58 +105,96 @@ export class AdminController {
   async getTenantUsers(@Param('orgId') orgId: number) {
     return this.adminService.getTenantUsers(orgId);
   }
- 
 
-@Post('/game/create')
-@HttpCode(HttpStatus.CREATED)
-@ApiOperation({ summary: 'Create a new game in master database' })
-@ApiBody({
-  description: 'Game creation payload including config JSON',
-  schema: {
-    type: 'object',
-    properties: {
-      name: { type: 'string', example: 'Teen Patti' },
-      description: { type: 'string', example: 'Teen Patti 3-card game' },
-      appKey: { type: 'string', example: 'TP12345' },
-      token: { type: 'string', example: 'secrettoken123' },
-      status: { type: 'string', example: 'active' },
-      config: {
-        type: 'object',
-        example: {
-          gameId: 16,
-          bettingCoins: [100, 500, 1000, 10000],
-          cardImages: [
-            ["https://deckofcardsapi.com/static/img/AS.png", "https://deckofcardsapi.com/static/img/2S.png", "https://deckofcardsapi.com/static/img/3S.png"],
-            ["https://deckofcardsapi.com/static/img/4S.png", "https://deckofcardsapi.com/static/img/5S.png", "https://deckofcardsapi.com/static/img/6S.png"],
-            ["https://deckofcardsapi.com/static/img/7S.png", "https://deckofcardsapi.com/static/img/8S.png", "https://deckofcardsapi.com/static/img/9S.png"]
-          ],
-          cardBackImages: [
-            ["https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png"],
-            ["https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png"],
-            ["https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png", "https://deckofcardsapi.com/static/img/back.png"]
-          ],
-          dealerAvatar: "https://i.pinimg.com/1200x/75/8e/93/758e934581866746e2c83d48c269f9a9.jpg",
-          tableBackgroundImage: "https://cdn.hub88.io/onetouchlive/bg/ont_teenpatti20-20.jpg",
-          betButtonAndCardClickSound: "https://yourdomain.com/button-click.mp3",
-          timerUpSound: "https://yourdomain.com/timer-up.mp3",
-          cardsShuffleSound: "https://yourdomain.com/cards-shuffling.mp3",
-          returnWinngingPotPercentage: [1.9, 2.0, 2.5],
-          colors: ["#33ff66", "#3366ff", "#ffcc00", "#9933ff"],
-          winningCalculationTime: 3000,
-          BettingTime: 40000,
-          nextBetWait: 5000
+
+  @Post('/game/create')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new game in master database' })
+  @ApiBody({
+    description: 'Game creation payload including config JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', example: 'Teen Patti' },
+        description: { type: 'string', example: 'Teen Patti 3-card game' },
+        appKey: { type: 'string', example: 'TP12345' },
+        token: { type: 'string', example: 'secrettoken123' },
+        status: { type: 'string', example: 'active' },
+        config: {
+          type: 'object',
+          example: {
+            gameId: 16,
+            bettingCoins: [
+              100,
+              500,
+              1000,
+              10000
+            ],
+            cardImages: [
+              [
+                "ACard.png",
+                "2Card.png",
+                "3Card.png"
+              ],
+              [
+                "4Card.png",
+                "5Card.png",
+                "6Card.png"
+              ],
+              [
+                "7Card.png",
+                "8Card.png",
+                "9Card.png"
+              ]
+            ],
+            "cardBackImages": [
+              [
+                "CardDeckback.png",
+                "CardDeckback.png",
+                "CardDeckback.png"
+              ],
+              [
+                "CardDeckback.png",
+                "CardDeckback.png",
+                "CardDeckback.png"
+              ],
+              [
+                "CardDeckback.png",
+                "CardDeckback.png",
+                "CardDeckback.png"
+              ]
+            ],
+            dealerAvatar: "DealerAvatarTeenpatti.jpg",
+            tableBackgroundImage: "teenPattiBackground.jpg",
+            betButtonAndCardClickSound: "button-click.mp3",
+            timerUpSound: "timeUp.mp3",
+            cardsShuffleSound: "card-sounds-flip.mp3",
+            returnWinngingPotPercentage: [
+              1.9,
+              2,
+              2.5
+            ],
+            colors: [
+              "#33ff66",
+              "#3366ff",
+              "#ffcc00",
+              "#9933ff"
+            ],
+            winningCalculationTime: 3000,
+            BettingTime: 40000,
+            nextBetWait: 5000
+          }
         }
       }
     }
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Game created successfully',
+  })
+  async createGame(@Body() body: any) {
+    return await this.adminService.createGameInMaster(body);
   }
-})
-@ApiResponse({
-  status: 201,
-  description: 'Game created successfully',
-})
-async createGame(@Body() body: any) {
-  return await this.adminService.createGameInMaster(body);
-}
 
   @Get('/game/configuration')
   @ApiOperation({ summary: 'Fetch all games from master DB' })
@@ -168,76 +206,76 @@ async createGame(@Body() body: any) {
     return this.adminService.getAllGames();
   }
 
-@Get('/game/configuration/:id')
-@ApiOperation({ summary: 'Fetch game config by game ID' })
-@ApiResponse({
-  status: 200,
-  description: 'Game config returned successfully',
-})
-async getGameById(@Param('id') id: string) {
-  const gameId = parseInt(id, 10);
+  @Get('/game/configuration/:id')
+  @ApiOperation({ summary: 'Fetch game config by game ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Game config returned successfully',
+  })
+  async getGameById(@Param('id') id: string) {
+    const gameId = parseInt(id, 10);
 
-  if (isNaN(gameId)) {
-    return {
-      success: false,
-      message: 'Invalid game ID',
-      data: null,
-    };
-  }
-
-  // Pass as an object to match your service method signature
-  return this.adminService.waveGameConfiguration({ gameId });
-}
-
-
-@Get('/game/userInfo')
-@HttpCode(HttpStatus.OK)
-@ApiOperation({ summary: 'Fetch user info by token' })
-@ApiResponse({
-  status: 200,
-  description: 'User info returned successfully',
-  example: {
-    success: true,
-    message: 'User info fetched successfully',
-    data: {
-      id: 101,
-      name: "John Doe",
-      balance: 5400,
-      profilePicture: "https://randomuser.me/api/portraits/men/75.jpg"
+    if (isNaN(gameId)) {
+      return {
+        success: false,
+        message: 'Invalid game ID',
+        data: null,
+      };
     }
+
+    // Pass as an object to match your service method signature
+    return this.adminService.waveGameConfiguration({ gameId });
   }
-})
-async gameUserInfo(@Headers('authorization') authHeader: string) {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+
+  @Get('/game/userInfo')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Fetch user info by token' })
+  @ApiResponse({
+    status: 200,
+    description: 'User info returned successfully',
+    example: {
+      success: true,
+      message: 'User info fetched successfully',
+      data: {
+        id: 101,
+        name: "John Doe",
+        balance: 5400,
+        profilePicture: "https://randomuser.me/api/portraits/men/75.jpg"
+      }
+    }
+  })
+  async gameUserInfo(@Headers('authorization') authHeader: string) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        success: false,
+        message: "Missing or invalid token",
+        data: null
+      };
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    // Validate token via service
+    const user = await this.adminService.validateUserToken(token);
+
+    if (!user) {
+      return {
+        success: false,
+        message: "Invalid token or user not found",
+        data: null
+      };
+    }
+
     return {
-      success: false,
-      message: "Missing or invalid token",
-      data: null
+      success: true,
+      message: "User info fetched successfully",
+      data: user
     };
   }
 
-  const token = authHeader.split(' ')[1];
 
-  // Validate token via service
-  const user = await this.adminService.validateUserToken(token);
-
-  if (!user) {
-    return {
-      success: false,
-      message: "Invalid token or user not found",
-      data: null
-    };
-  }
-
-  return {
-    success: true,
-    message: "User info fetched successfully",
-    data: user
-  };
-}
-
-
- @Post('game/submitFlow')
+  @Post('game/submitFlow')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Submit game flow and update user balance' })
   async gameSubmitFlow(
@@ -250,23 +288,23 @@ async gameUserInfo(@Headers('authorization') authHeader: string) {
 
     const token = authHeader.split(' ')[1];
     const user = await this.adminService.validateUserToken(token);
-    let userBalance=user.balance;
+    let userBalance = user.balance;
     if (!user) {
       return { success: false, message: 'Invalid token or user not found', data: null };
     }
     const { betAmount, type, transactionId } = body;
-    if(userBalance<betAmount){
-     return { success: false, message: 'Not enough balance.', data: user };
+    if (userBalance < betAmount) {
+      return { success: false, message: 'Not enough balance.', data: user };
     }
-    let newBalance=userBalance;
+    let newBalance = userBalance;
     // Update balance
-    if (type === 1){
-      newBalance=userBalance-betAmount;
-    }else if (type === 2){
-       newBalance=userBalance+betAmount;
-      
-    } 
-    user.balance=newBalance;
+    if (type === 1) {
+      newBalance = userBalance - betAmount;
+    } else if (type === 2) {
+      newBalance = userBalance + betAmount;
+
+    }
+    user.balance = newBalance;
     return {
       success: true,
       message: 'User info fetched successfully',

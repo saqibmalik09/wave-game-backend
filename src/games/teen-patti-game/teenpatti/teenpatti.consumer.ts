@@ -54,7 +54,7 @@ export class TeenpattiConsumer implements OnModuleInit {
       if(bet.gameId=='16'){
         await masterPrisma.ongoingTeenpattiGame.create({
         data: {
-          potIndex: bet.potIndex,
+          potIndex: Number(bet.potIndex),
           userId: bet.userId,
           amount: bet.amount,
           type: bet.betType,
