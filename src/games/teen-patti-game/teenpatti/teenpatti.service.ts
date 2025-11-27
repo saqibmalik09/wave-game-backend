@@ -161,7 +161,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       "type": betType,
       "transactionId": betId
     }
-    const baseURL = "http://3.108.229.85:5000/"
+    const baseURL = "https://my.wavegames.online/"
     const endPoint = "admin/game/submitFlow";
     const response = await axios.post(
       `${baseURL}${endPoint}`, submitFlowData, {
@@ -361,7 +361,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           "type": 2,
           "transactionId": uuidv4()
         }
-        const baseURL = "http://3.108.229.85:5000/"
+        const baseURL = "https://my.wavegames.online/"
         const endPoint = "admin/game/submitFlow";
         const response = await axios.post(
           `${baseURL}${endPoint}`, submitFlowData, {
