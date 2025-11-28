@@ -86,7 +86,8 @@ services:
       KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: 300000
       
       # JVM heap settings for high load
-      KAFKA_HEAP_OPTS: '-Xmx2G -Xms2G'
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+      # '-Xmx2G -Xms2G'
       
       # Metrics and monitoring
       KAFKA_METRIC_REPORTERS: ''
