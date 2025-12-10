@@ -225,7 +225,7 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
         activeGames: "16,2003,77",
         tanantName: "Ricolive",
         tenantAppKey: "Eeb1GshW3a",
-        tenantProductionDomain: "127.0.0.0:4005",
+        tenantProductionDomain: "https:my.wavegames.online",
         tenantTestingDomain: "https://sandbox.ricolivee.vip/",
         tenantPassword: "24563672ER",
       },

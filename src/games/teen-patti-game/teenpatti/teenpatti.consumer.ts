@@ -28,7 +28,7 @@ export class TeenpattiConsumer implements OnModuleInit {
       false, // Don't read from beginning
     );
 
-    this.logger.log('🎮 Teen Patti Consumer started and ready to process bets');
+    this.logger.log(' Teen Patti Consumer started and ready to process bets');
   }
 
   /**
@@ -87,7 +87,7 @@ export class TeenpattiConsumer implements OnModuleInit {
       this.processedCount++;
       
       if (this.processedCount % 1000 === 0) {
-        this.logger.log(`✅ Processed ${this.processedCount} bets`);
+        this.logger.log(` Processed ${this.processedCount} bets`);
       }
 
     } catch (error) {
