@@ -16,9 +16,6 @@ import { HttpService } from '@nestjs/axios';
 import axios from 'axios';
 import { masterPrisma } from 'src/prisma/masterClient';
 
-
-
-
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -31,7 +28,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   private startTime = Date.now();
 
   constructor(private readonly kafka: KafkaService) {
-    // Log throughput every 5 seconds
     setInterval(() => this.logThroughput(), 5000);
   }
   @WebSocketServer()
@@ -44,46 +40,66 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
   async handleConnection(client: Socket) {
     const userId = client.handshake.query.userId as string;
+    const appKey = client.handshake.query.appKey as string;
 
-    if (userId) {
-      await masterPrisma.gameOngoingUsers.upsert({
+    if (!userId || !appKey) {
+      console.log("Missing userId or appKey in params");
+      return;
+    }
+
+    try {
+      const existing = await masterPrisma.gameOngoingUsers.findUnique({
         where: { userId },
-        update: {
-          connectionUserId: userId, // ✅ store socket id here!
-          socketId:client.id
-        },
-        create: {
-          userId,
-          socketId:client.id,
-          connectionUserId: userId, // ✅ save on first creation
-        },
       });
+
+      if (existing) {
+        await masterPrisma.gameOngoingUsers.update({
+          where: { userId },
+          data: {
+            socketId: client.id,
+            appKey,
+          },
+        });
+      } else {
+        await masterPrisma.gameOngoingUsers.create({
+          data: {
+            userId,
+            socketId: client.id,
+            appKey,
+          },
+        });
+      }
+
+      console.log(`SocketId ${client.id} saved for userId ${userId}`);
+    } catch (err) {
+      console.error("DB error:", err);
     }
 
-    console.log(` Client connected: ${client.id} userId ${userId}`);
+    console.log(`Client connected: ${client.id} userId ${userId}`);
   }
 
 
- async handleDisconnect(client: Socket) {
-  try {
-    console.log(`Client disconnected: ${client.id}`);
-    // 1. Find user record using socketId
-    const user = await masterPrisma.gameOngoingUsers.findFirst({
-      where: { socketId: client.id },
-    });
-    if (user) {
-      await masterPrisma.gameOngoingUsers.delete({
-        where: { userId: user.userId },
-      });
 
-      console.log(`Deleted disconnected user: ${user.userId}`);
-    } else {
-      console.log(`No user found with socketId: ${client.id}`);
+  async handleDisconnect(client: Socket) {
+    try {
+      console.log(`Client disconnected: ${client.id}`);
+      // 1. Find user record using socketId
+      const user = await masterPrisma.gameOngoingUsers.findFirst({
+        where: { socketId: client.id },
+      });
+      if (user) {
+        await masterPrisma.gameOngoingUsers.delete({
+          where: { userId: user.userId },
+        });
+
+        console.log(`Deleted disconnected user: ${user.userId}`);
+      } else {
+        console.log(`No user found with socketId: ${client.id}`);
+      }
+    } catch (error) {
+      console.error("Error in handleDisconnect:", error);
     }
-  } catch (error) {
-    console.error("Error in handleDisconnect:", error);
   }
-}
 
   public running = false;
   public announceWinningSent = false;
@@ -161,7 +177,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       "type": betType,
       "transactionId": betId
     }
-    const baseURL = "https://my.wavegames.online/"
+    const baseURL = "http://127.0.0.1:5000/"
     const endPoint = "admin/game/submitFlow";
     const response = await axios.post(
       `${baseURL}${endPoint}`, submitFlowData, {
@@ -169,7 +185,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      timeout: 1000,
+      timeout: 10000,
     }
     );
     const apiData = response.data;
@@ -186,8 +202,18 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     try {
       // Produce to Kafka (async, non-blocking)
       await this.kafka.produce('teenpatti', enrichedBet);
-
-      this.server.to(socketId).emit('teenpattiBetResponse', {
+      //prisma game ongoging users get socket id by user id
+     let userSocketId= await masterPrisma.gameOngoingUsers.findFirst({
+        where: { userId },  
+        select: {
+          socketId: true,
+        },  
+      });
+      if (!userSocketId || !userSocketId.socketId) {
+        console.log("SocketId not found for userId:", userId);
+        return;
+      }
+      this.server.to(userSocketId?.socketId).emit('teenpattiBetResponse', {
         success: apiData.success,
         message: apiData.message,
         data: {
@@ -204,7 +230,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       };
     } catch (error) {
       this.logger.error(`Failed to place bet ${betId}`, error.stack);
-      throw error;
+      throw error.message;
     }
   }
 
@@ -344,15 +370,12 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       }
       let socketId = winnerRecord.socketId;
 
-      console.log("userIdsss:", userId, "socketId:", socketId)
-
       const winningMessage = {
         userId,
         winningAmount: expectedWinningAmount[userId] // correct amount
       };
-      if(socketId){
-        console.log("Emitted",socketId)
-      this.server.to(socketId).emit("toWinnerMessage", winningMessage);
+      if (socketId) {
+        this.server.to(socketId).emit("toWinnerMessage", winningMessage);
       }
       try {
 
@@ -430,7 +453,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     };
     this.server.emit('teenpattiAnnounceGameResultResponse', response);
     // refresh for next game
-     await masterPrisma.ongoingTeenpattiGame.deleteMany({});
+    await masterPrisma.ongoingTeenpattiGame.deleteMany({});
 
     return response;
   }
@@ -454,46 +477,54 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
   //   return { success: true, users: this.Users };
   // }
- @SubscribeMessage('teenpattiGameTableJoin')
-async gameTeenpattiJoin(
-  @ConnectedSocket() client: Socket,
-  @MessageBody() user: { userId: string; name: string; imageProfile: string, appKey: string, token: string }
-) {
-  try {
-    // 1. Find user first
-    const updated = await masterPrisma.gameOngoingUsers.updateMany({
-    where: { userId: user.userId },
-    data: {
-      name: user.name,
-      profilePicture: user.imageProfile,
-      appKey: user.appKey,
-      token: user.token,
-    },
-  });
-    await masterPrisma.gameOngoingUsers.deleteMany({
-      where: {
-        appKey: null
-      }
-    });
+  @SubscribeMessage('teenpattiGameTableJoin')
+  async gameTeenpattiJoin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() user: { userId: string; name: string; imageProfile: string, appKey: string, token: string }
+  ) {
+    try {
+             console.log(`User ${user.userId} joined teenPattiGame room.`);
 
-    // 3. Fetch updated users list
-    const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
-    // 4. Join room
-    client.join('teenPattiGame');
+      // 1. Find user first
+      await masterPrisma.gameOngoingUsers.updateMany({
+        where: { userId: user.userId },
+        data: {
+          name: user.name,
+          profilePicture: user.imageProfile,
+          appKey: user.appKey,
+          token: user.token,
+        },
+      });
+      // await masterPrisma.gameOngoingUsers.deleteMany({
+      //   where: {
+      //     appKey: null
+      //   }
+      // });
+      // first dummy players will be shown and usersInGame will be appended after that making sure new user on top of these players and when real users join they will be on top of dummy keeping data format sending same
+      const dummyPlayers= [
+        { userId: 'gzvISjgXLW', name: 'Alex', profilePicture: 'https://randomuser.me/api/portraits/women/1.jpg', },
+        { userId: 'sdBPg21sbL', name: 'Max', profilePicture: 'https://randomuser.me/api/portraits/men/2.jpg', },
+        { userId: 'EscjvllJMV', name: 'Zabir', profilePicture: 'https://randomuser.me/api/portraits/men/3.jpg'},
+        { userId: 'YZPiqFzhZ1', name: 'Waseem', profilePicture: 'https://randomuser.me/api/portraits/men/4.jpg'}
+      ]
+      // 3. Make sure dummy players will be always below when new real user join the game table it will be on top of these dummy players not below
+      const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
+      const combinedUsers = [ ...usersInGame, ...dummyPlayers];
+      // 4. Join room
+      client.join('teenPattiGame');
+      // 5. Emit updated list to room
+      this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', {
+        users: combinedUsers,
+      });
 
-    // 5. Emit updated list to room
-    this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', {
-      users: usersInGame,
-    });
+      // 6. Same response back
+      return { success: true, users: combinedUsers };
 
-    // 6. Same response back
-    return { success: true, users: usersInGame };
-
-  } catch (err) {
-    console.error('Error saving/fetching users:', err.message);
-    return { success: false, users: [], message: 'Failed to save user' };
+    } catch (err) {
+      console.error('Error saving/fetching users:', err.message);
+      return { success: false, users: [], message: 'Failed to save user' };
+    }
   }
-}
 
 
 
@@ -532,31 +563,31 @@ async gameTeenpattiJoin(
   //   }
 
   //   try {
-      // // Update the socketId for this user in master database
-      // const updatedUser = await masterPrisma.gameOngoingUsers.updateMany({
-      //   where: { userId },
-      //   data: { socketId: client.id },
-      // });
+  // // Update the socketId for this user in master database
+  // const updatedUser = await masterPrisma.gameOngoingUsers.updateMany({
+  //   where: { userId },
+  //   data: { socketId: client.id },
+  // });
 
-      // // Fetch the updated user
-      // const user = await masterPrisma.gameOngoingUsers.findUnique({
-      //   where: { userId },
-      // });
+  // // Fetch the updated user
+  // const user = await masterPrisma.gameOngoingUsers.findUnique({
+  //   where: { userId },
+  // });
 
-      // if (!user) {
-      //   return { success: false, message: "User not found in database" };
-      // }
+  // if (!user) {
+  //   return { success: false, message: "User not found in database" };
+  // }
 
-      // // Emit back to the socket
-      // client.emit("socketIdSaved", {
-      //   success: true,
-      //   user,
-      // });
+  // // Emit back to the socket
+  // client.emit("socketIdSaved", {
+  //   success: true,
+  //   user,
+  // });
 
-      // return {
-      //   success: true,
-      //   user,
-      // };
+  // return {
+  //   success: true,
+  //   user,
+  // };
 
   //   } catch (err) {
   //     console.error("Failed to update socketId:", err);
