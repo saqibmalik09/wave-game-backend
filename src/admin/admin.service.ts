@@ -224,14 +224,16 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
       "Eeb1GshW3a": {
         activeGames: "16,2003,77",
         tanantName: "Ricolive",
+        environemnt: "production",
         tenantAppKey: "Eeb1GshW3a",
-        tenantProductionDomain: "https:my.wavegames.online",
+        tenantProductionDomain: "https://joygames.ricolivee.vip",
         tenantTestingDomain: "https://sandbox.ricolivee.vip/",
         tenantPassword: "24563672ER",
       },
       "b1K7dw2MZ3": {
         activeGames: "16,2003,77",
         tanantName: "Banolive",
+        environemnt: "production",
         tenantAppKey: "b1K7dw2MZ3",
         tenantProductionDomain: "https://banolive.com/",
         tenantTestingDomain: "https://test.banolive.com/",
@@ -240,6 +242,7 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
       "2FUSmZfG0A": {
         activeGames: "16,2003,77",
         tanantName: "Fruity",
+        environemnt: "production",
         tenantAppKey: "2FUSmZfG0A",
         tenantProductionDomain: "https://fruitylivy.com/",
         tenantTestingDomain: "https://socket.fruitylivy.com/",

@@ -39,8 +39,8 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   }
 
   async handleConnection(client: Socket) {
-    const userId = client.handshake.query.userId as string;
-    const appKey = client.handshake.query.appKey as string;
+      const userId = `${client.handshake.query.userId ?? ''}`;
+      const appKey = `${client.handshake.query.appKey ?? ''}`;
 
     if (!userId || !appKey) {
       console.log("Missing userId or appKey in params");
@@ -77,8 +77,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
     console.log(`Client connected: ${client.id} userId ${userId}`);
   }
-
-
 
   async handleDisconnect(client: Socket) {
     try {
@@ -165,29 +163,31 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       token?: string;
       gameId?: string;
       potIndex?: number;
-      socketId: string
+      socketId: string;
+      tenantBaseURL?:string;
 
     }) {
     const betId = uuidv4();
     const timestamp = Date.now();
-    const { userId, amount, betType, appKey, token, gameId, potIndex, socketId } = bet
+    const { userId, amount, betType, token, gameId, potIndex, socketId,tenantBaseURL } = bet
     //call api
     let submitFlowData = {
       "betAmount": amount,
       "type": betType,
       "transactionId": betId
     }
-    const baseURL = "http://127.0.0.1:5000/"
-    const endPoint = "admin/game/submitFlow";
+    const baseURL = tenantBaseURL
+    const endPoint = "/wave/game/submitFlow";
     const response = await axios.post(
       `${baseURL}${endPoint}`, submitFlowData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      timeout: 10000,
+      timeout: 100000,
     }
     );
+    // console.log("API response received:", response.data);
     const apiData = response.data;
     const playerNewBalance = apiData.data.balance;
     const enrichedBet = {
@@ -213,7 +213,8 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         console.log("SocketId not found for userId:", userId);
         return;
       }
-      this.server.to(userSocketId?.socketId).emit('teenpattiBetResponse', {
+      // console.log("Emitting bet response to socketId:", userSocketId.socketId);
+      this.server.emit('teenpattiBetResponse', {
         success: apiData.success,
         message: apiData.message,
         data: {
@@ -396,7 +397,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         }
         );
         if (response.statusText == "OK") {
-          //added
+          //added     
         } else {
           console.log("Failed to add win amount")
         }
@@ -478,54 +479,61 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   //   return { success: true, users: this.Users };
   // }
   @SubscribeMessage('teenpattiGameTableJoin')
-  async gameTeenpattiJoin(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() user: { userId: string; name: string; imageProfile: string, appKey: string, token: string }
-  ) {
-    try {
-             console.log(`User ${user.userId} joined teenPattiGame room.`);
-
-      // 1. Find user first
-      await masterPrisma.gameOngoingUsers.updateMany({
-        where: { userId: user.userId },
-        data: {
-          name: user.name,
-          profilePicture: user.imageProfile,
-          appKey: user.appKey,
-          token: user.token,
-        },
-      });
-      // await masterPrisma.gameOngoingUsers.deleteMany({
-      //   where: {
-      //     appKey: null
-      //   }
-      // });
-      // first dummy players will be shown and usersInGame will be appended after that making sure new user on top of these players and when real users join they will be on top of dummy keeping data format sending same
-      const dummyPlayers= [
-        { userId: 'gzvISjgXLW', name: 'Alex', profilePicture: 'https://randomuser.me/api/portraits/women/1.jpg', },
-        { userId: 'sdBPg21sbL', name: 'Max', profilePicture: 'https://randomuser.me/api/portraits/men/2.jpg', },
-        { userId: 'EscjvllJMV', name: 'Zabir', profilePicture: 'https://randomuser.me/api/portraits/men/3.jpg'},
-        { userId: 'YZPiqFzhZ1', name: 'Waseem', profilePicture: 'https://randomuser.me/api/portraits/men/4.jpg'}
-      ]
-      // 3. Make sure dummy players will be always below when new real user join the game table it will be on top of these dummy players not below
-      const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
-      const combinedUsers = [ ...usersInGame, ...dummyPlayers];
-      // 4. Join room
-      client.join('teenPattiGame');
-      // 5. Emit updated list to room
-      this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', {
-        users: combinedUsers,
-      });
-
-      // 6. Same response back
-      return { success: true, users: combinedUsers };
-
-    } catch (err) {
-      console.error('Error saving/fetching users:', err.message);
-      return { success: false, users: [], message: 'Failed to save user' };
-    }
+async gameTeenpattiJoin(
+  @ConnectedSocket() client: Socket,
+  @MessageBody() user: {
+    userId: string;
+    name: string;
+    imageProfile: string;
+    appKey: string;
+    token: string;
   }
+) {
+  try {
+    const userId = String(user.userId);
 
+    // ✅ SAFE UPSERT
+    await masterPrisma.gameOngoingUsers.upsert({
+      where: { userId },
+      update: {
+        name: user.name,
+        profilePicture: user.imageProfile,
+        appKey: user.appKey,
+        token: user.token,
+      },
+      create: {
+        userId,
+        name: user.name,
+        profilePicture: user.imageProfile,
+        appKey: user.appKey,
+        token: user.token,
+      },
+    });
+
+    const dummyPlayers = [
+      { userId: 'gzvISjgXLW', name: 'Alex', profilePicture: 'https://randomuser.me/api/portraits/women/1.jpg' },
+      { userId: 'sdBPg21sbL', name: 'Max', profilePicture: 'https://randomuser.me/api/portraits/men/2.jpg' },
+      { userId: 'EscjvllJMV', name: 'Zabir', profilePicture: 'https://randomuser.me/api/portraits/men/3.jpg' },
+      { userId: 'YZPiqFzhZ1', name: 'Waseem', profilePicture: 'https://randomuser.me/api/portraits/men/4.jpg' },
+    ];
+
+    const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
+    const combinedUsers = [...usersInGame, ...dummyPlayers];
+
+    // ✅ Single room for table
+    client.join('teenPattiGame');
+
+    this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', {
+      users: combinedUsers,
+    });
+
+    return { success: true, users: combinedUsers };
+
+  } catch (err: any) {
+    console.error('Teen Patti Join Error:', err);
+    return { success: false, users: [], message: err.message };
+  }
+}
 
 
   // @SubscribeMessage('mySocketId')
