@@ -499,14 +499,12 @@ async gameTeenpattiJoin(
         name: user.name,
         profilePicture: user.imageProfile,
         appKey: user.appKey,
-        token: user.token,
       },
       create: {
         userId,
         name: user.name,
         profilePicture: user.imageProfile,
         appKey: user.appKey,
-        token: user.token,
       },
     });
 
