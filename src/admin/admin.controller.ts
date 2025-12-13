@@ -106,6 +106,19 @@ export class AdminController {
     return this.adminService.getTenantUsers(orgId);
   }
 
+  @Get('/tenantdatabyappkey/:appKey')
+  @ApiOperation({ summary: 'Fetch tenantData by app key' })
+  @ApiResponse({
+    status: 200,
+    description: 'teanat config returned successfully',
+  })
+  async tenantDataByAppKEy(@Param('appKey') appKey: string) {
+
+    return this.adminService.tenantDetailsByAppKey({ appKey });
+
+  }
+
+
 
   @Post('/game/create')
   @HttpCode(HttpStatus.CREATED)
