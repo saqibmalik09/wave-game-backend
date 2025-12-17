@@ -198,7 +198,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      timeout: 100000,
+      timeout: 10000,
     }
     );
           //prisma game ongoging users get socket id by user id
