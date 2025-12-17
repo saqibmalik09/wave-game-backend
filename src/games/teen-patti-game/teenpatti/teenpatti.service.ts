@@ -39,29 +39,35 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   }
 
   async handleConnection(client: Socket) {
-      const userId = `${client.handshake.query.userId ?? ''}`;
-      const appKey = `${client.handshake.query.appKey ?? ''}`;
+  const userId = String(client.handshake.query.userId ?? '');
+  const appKey = String(client.handshake.query.appKey ?? '');
 
-    if (!userId || !appKey) {
-      console.log("Missing userId or appKey in params");
-      return;
-    }
+  if (!userId || !appKey) {
+    console.log('Missing userId or appKey');
+    return;
+  }
 
-    try {
-      const existing = await masterPrisma.gameOngoingUsers.findUnique({
+  try {
+    // 🔒 prevent duplicate execution per socket
+    if (client.data.initialized) return;
+    client.data.initialized = true;
+
+    await masterPrisma.$transaction(async (tx) => {
+      const existing = await tx.gameOngoingUsers.findUnique({
         where: { userId },
       });
 
       if (existing) {
-        await masterPrisma.gameOngoingUsers.update({
+        await tx.gameOngoingUsers.update({
           where: { userId },
           data: {
             socketId: client.id,
             appKey,
+            updatedAt: new Date(),
           },
         });
       } else {
-        await masterPrisma.gameOngoingUsers.create({
+        await tx.gameOngoingUsers.create({
           data: {
             userId,
             socketId: client.id,
@@ -69,14 +75,22 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           },
         });
       }
+    });
 
-      console.log(`SocketId ${client.id} saved for userId ${userId}`);
-    } catch (err) {
-      console.error("DB error:", err);
+    console.log(`SocketId ${client.id} saved for userId ${userId}`);
+
+  } catch (err) {
+    if (err.code === 'P2002') {
+      console.warn(`Duplicate connection ignored for userId ${userId}`);
+      return;
     }
 
-    console.log(`Client connected: ${client.id} userId ${userId}`);
+    console.error('DB error:', err);
   }
+
+  console.log(`Client connected: ${client.id} userId ${userId}`);
+}
+
 
   async handleDisconnect(client: Socket) {
     try {
@@ -187,8 +201,31 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       timeout: 100000,
     }
     );
-    // console.log("API response received:", response.data);
+          //prisma game ongoging users get socket id by user id
+    console.log("API response received:", response.data);
     const apiData = response.data;
+      let userSocketId= await masterPrisma.gameOngoingUsers.findFirst({
+        where: { userId },  
+        select: {
+          socketId: true,
+        },  
+      });
+      if (!userSocketId || !userSocketId.socketId) {
+        console.log("SocketId not found for userId:", userId);
+        return;
+      }
+    if(apiData.success==false){
+       this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
+        success: apiData.success,
+        message: apiData.message,
+        data: {
+          ...apiData.data,
+          potIndex,
+          amount
+        },
+      });
+      return;
+    }
     const playerNewBalance = apiData.data.balance;
     const enrichedBet = {
       betId,
@@ -202,19 +239,9 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     try {
       // Produce to Kafka (async, non-blocking)
       await this.kafka.produce('teenpatti', enrichedBet);
-      //prisma game ongoging users get socket id by user id
-     let userSocketId= await masterPrisma.gameOngoingUsers.findFirst({
-        where: { userId },  
-        select: {
-          socketId: true,
-        },  
-      });
-      if (!userSocketId || !userSocketId.socketId) {
-        console.log("SocketId not found for userId:", userId);
-        return;
-      }
+  
       // console.log("Emitting bet response to socketId:", userSocketId.socketId);
-      this.server.emit('teenpattiBetResponse', {
+      this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
         success: apiData.success,
         message: apiData.message,
         data: {
@@ -492,7 +519,6 @@ async gameTeenpattiJoin(
   try {
     const userId = String(user.userId);
 
-    // ✅ SAFE UPSERT
     await masterPrisma.gameOngoingUsers.upsert({
       where: { userId },
       update: {
@@ -519,9 +545,18 @@ async gameTeenpattiJoin(
     const combinedUsers = [...usersInGame, ...dummyPlayers];
 
     // ✅ Single room for table
-    client.join('teenPattiGame');
-
-    this.server.to('teenPattiGame').emit('teenpattiGameTableUpdate', {
+    let userSocketId= await masterPrisma.gameOngoingUsers.findFirst({
+        where: { userId },  
+        select: {
+          socketId: true,
+        },  
+      });
+      if (!userSocketId || !userSocketId.socketId) {
+        console.log("SocketId not found for userId:", userId);
+        return;
+      }
+      console.log("user",user,"userSocet:",userSocketId)
+     this.server.emit('teenpattiGameTableUpdate', {
       users: combinedUsers,
     });
 

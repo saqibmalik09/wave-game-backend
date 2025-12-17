@@ -181,6 +181,7 @@ export class AdminController {
             tableBackgroundImage: "teenPattiBackground.jpg",
             betButtonAndCardClickSound: "button-click.mp3",
             timerUpSound: "timeUp.mp3",
+            potClickSound: "pot-click.mp3",
             cardsShuffleSound: "card-sounds-flip.mp3",
             returnWinngingPotPercentage: [
               1.9,
