@@ -46,6 +46,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     console.log('Missing userId or appKey');
     return;
   }
+  console.log("token:",token)
 
   try {
     // 🔒 prevent duplicate execution per socket
