@@ -1,107 +1,107 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/master"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  generator client {
+    provider = "prisma-client-js"
+    output   = "../generated/master"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
 
-}
+  }
 
-datasource db {
-  provider = "mysql"
-  url      = env("MASTER_DATABASE_URL")
-}
+  datasource db {
+    provider = "mysql"
+    url      = env("MASTER_DATABASE_URL")
+  }
 
-model Organization {
-  id             Int             @id @default(autoincrement())
-  name           String
-  email          String          @unique
-  dbHost         String
-  dbName         String
-  dbUser         String
-  dbPassword     String
-  status         String          @default("active")
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  model Organization {
+    id             Int             @id @default(autoincrement())
+    name           String
+    email          String          @unique
+    dbHost         String
+    dbName         String
+    dbUser         String
+    dbPassword     String
+    status         String          @default("active")
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
 
-  administrators Administrator[]
-}
+    administrators Administrator[]
+  }
 
-model Administrator {
-  id             Int           @id @default(autoincrement())
-  email          String        @unique
-  password       String        @default("goldenSand")
-  role           String        @default("superadmin")
-  organizationId Int
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  model Administrator {
+    id             Int           @id @default(autoincrement())
+    email          String        @unique
+    password       String        @default("goldenSand")
+    role           String        @default("superadmin")
+    organizationId Int
+    createdAt      DateTime      @default(now())
+    updatedAt      DateTime      @updatedAt
 
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-}
+    organization   Organization  @relation(fields: [organizationId], references: [id])
+  }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  userId    String?  
-  name      String?  
-  appKey    String?
-  totalGamePlayed  Int   @default(0)
-  gameWon  Int   @default(0)
-  gameLost  Int   @default(0)  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@index([appKey])
-}
-model Game {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  appKey      String?
-  token       String?
-  status      String   @default("active")
-  config      Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@index([appKey])
-}
+  model User {
+    id        Int      @id @default(autoincrement())
+    userId    String?  
+    name      String?  
+    appKey    String?
+    totalGamePlayed  Int   @default(0)
+    gameWon  Int   @default(0)
+    gameLost  Int   @default(0)  
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@index([appKey])
+  }
+  model Game {
+    id          Int      @id @default(autoincrement())
+    name        String
+    description String?
+    appKey      String?
+    token       String?
+    status      String   @default("active")
+    config      Json?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    @@index([appKey])
+  }
 
-model Bet {
-  id        Int      @id @default(autoincrement())
-  gameId    Int
-  userId    String?      // must match User.id type
-  bet       Int?
-  type      Int?
-  appKey    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
-  @@index([gameId])
-  @@index([userId])
-}
+  model Bet {
+    id        Int      @id @default(autoincrement())
+    gameId    Int
+    userId    String?      // must match User.id type
+    bet       Int?
+    type      Int?
+    appKey    String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt 
+    @@index([gameId])
+    @@index([userId])
+  }
 
-model GameOngoingUsers {
-  id        Int      @id @default(autoincrement())
-  userId    String   @unique
-  name      String?  
-  balance   String?  
-  appKey    String? 
-  token     String? 
-  connectionUserId     String?  
-  socketId   String?
-  profilePicture String? 
-  totalGamePlayed  Int   @default(0)
-  gameWon  Int   @default(0)
-  gameLost  Int   @default(0)
-   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@index([appKey])
-}
-model OngoingTeenpattiGame {
-  id             Int      @id @default(autoincrement())
-  potIndex       Int?
-  potName       String?
-  appKey         String?
-  userId         String?
-  amount         Int?
-  type           Int?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
-}
+  model GameOngoingUsers {
+    id        Int      @id @default(autoincrement())
+    userId    String   @unique
+    name      String?  
+    balance   String?  
+    appKey    String? 
+     token     String?  @db.Text
+    connectionUserId     String?  
+    socketId   String?
+    profilePicture String? 
+    totalGamePlayed  Int   @default(0)
+    gameWon  Int   @default(0)
+    gameLost  Int   @default(0)
+    
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@index([appKey])
+  }
+  model OngoingTeenpattiGame {
+    id             Int      @id @default(autoincrement())
+    potIndex       Int?
+    potName       String?
+    appKey         String?
+    userId         String?
+    amount         Int?
+    type           Int?
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    
+  }
