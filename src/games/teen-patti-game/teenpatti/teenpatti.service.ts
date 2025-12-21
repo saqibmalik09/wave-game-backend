@@ -42,11 +42,12 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   const userId = String(client.handshake.query.userId ?? '');
   const appKey = String(client.handshake.query.appKey ?? '');
   const token = String(client.handshake.query.token ?? '');
-  if (!userId || !appKey || token) {
-    console.log('Missing userId or appKey');
-    return;
-  }
   console.log("token:",token)
+  // if ( token) {
+  //   console.log('Missing userId or appKey');
+  //   return;
+  // }
+  
 
   try {
     // 🔒 prevent duplicate execution per socket
