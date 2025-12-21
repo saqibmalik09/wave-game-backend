@@ -243,7 +243,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       await this.kafka.produce('teenpatti', enrichedBet);
   
       // console.log("Emitting bet response to socketId:", userSocketId.socketId);
-      this.server.emit('teenpattiBetResponse', {
+      this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
         success: apiData.success,
         message: apiData.message,
         data: {
@@ -407,7 +407,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         winningPotIndex
       };
       if (socketId) {
-        this.server.emit("toWinnerMessage", winningMessage);
+        this.server.to(socketId).emit("toWinnerMessage", winningMessage);
       }
       try {
 
@@ -416,7 +416,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           "type": 2,
           "transactionId": uuidv4()
         }
-        
+
         const baseURL = "https://wavegame.ricolivee.vip/"
         const endPoint = "wave/game/submitFlow";
         const response = await axios.post(
