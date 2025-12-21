@@ -41,8 +41,8 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   async handleConnection(client: Socket) {
   const userId = String(client.handshake.query.userId ?? '');
   const appKey = String(client.handshake.query.appKey ?? '');
-
-  if (!userId || !appKey) {
+  const token = String(client.handshake.query.token ?? '');
+  if (!userId || !appKey || token) {
     console.log('Missing userId or appKey');
     return;
   }
@@ -63,6 +63,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           data: {
             socketId: client.id,
             appKey,
+            token,
             updatedAt: new Date(),
           },
         });
@@ -72,6 +73,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
             userId,
             socketId: client.id,
             appKey,
+            token
           },
         });
       }
@@ -132,9 +134,9 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
     const phases = [
       { name: 'bettingTimer', duration: 30 },
-      { name: 'winningCalculationTimer', duration: 4 },
-      { name: 'resultAnnounceTimer', duration: 5 },
-      { name: 'newGameStartTimer', duration: 5 },
+      { name: 'winningCalculationTimer', duration: 3 },
+      { name: 'resultAnnounceTimer', duration: 3 },
+      { name: 'newGameStartTimer', duration: 3 },
     ];
 
     while (true) {
@@ -241,7 +243,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       await this.kafka.produce('teenpatti', enrichedBet);
   
       // console.log("Emitting bet response to socketId:", userSocketId.socketId);
-      this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
+      this.server.emit('teenpattiBetResponse', {
         success: apiData.success,
         message: apiData.message,
         data: {
@@ -400,10 +402,12 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
       const winningMessage = {
         userId,
-        winningAmount: expectedWinningAmount[userId] // correct amount
+        winningAmount: expectedWinningAmount[userId], // correct amount
+        betType:2,
+        winningPotIndex
       };
       if (socketId) {
-        this.server.to(socketId).emit("toWinnerMessage", winningMessage);
+        this.server.emit("toWinnerMessage", winningMessage);
       }
       try {
 
@@ -412,17 +416,18 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           "type": 2,
           "transactionId": uuidv4()
         }
-        const baseURL = "https://my.wavegames.online/"
-        const endPoint = "admin/game/submitFlow";
+        const baseURL = "https://wavegame.ricolivee.vip/"
+        const endPoint = "wave/game/submitFlow";
         const response = await axios.post(
           `${baseURL}${endPoint}`, submitFlowData, {
           headers: {
             'Authorization': `Bearer ${winnerRecord.token}`,
             'Content-Type': 'application/json',
           },
-          timeout: 1000,
+          timeout: 4000,
         }
         );
+        console.log("response:",response.data)
         if (response.statusText == "OK") {
           //added     
         } else {
