@@ -419,7 +419,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           "transactionId": uuidv4()
         }
 
-        const baseURL = "https://joygames.ricolivee.vip/"
+        const baseURL = "https://wavegame.ricolivee.vip/"
         const endPoint = "wave/game/submitFlow";
         const response = await axios.post(
           `${baseURL}${endPoint}`, submitFlowData, {
