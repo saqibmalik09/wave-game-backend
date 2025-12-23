@@ -219,7 +219,7 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   @SubscribeMessage('tenantDetailsByAppKey')
   async tenantDetailsByAppKey(@MessageBody() body: { appKey: string }) {
-    const appKey = body.appKey;
+    const appKey = body.appKey; 
     const appKeyConfigs: Record<string, any> = {
       "Eeb1GshW3a": {
         activeGames: "16,2003,77",
