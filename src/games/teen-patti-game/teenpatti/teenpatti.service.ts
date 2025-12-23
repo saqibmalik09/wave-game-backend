@@ -35,65 +35,61 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
   // ✅ Required WebSocket lifecycle methods
   afterInit(server: Server) {
-    console.log(' Teenpatti Gateway Initialized');
   }
 
   async handleConnection(client: Socket) {
-  const userId = String(client.handshake.query.userId ?? '');
-  const appKey = String(client.handshake.query.appKey ?? '');
-  const token = String(client.handshake.query.token ?? '');
-  console.log("token:",token)
-  // if ( token) {
-  //   console.log('Missing userId or appKey');
-  //   return;
-  // }
-  
+    const userId = String(client.handshake.query.userId ?? '');
+    const appKey = String(client.handshake.query.appKey ?? '');
+    const token = String(client.handshake.query.token ?? '');
+    // if ( token) {
+    //   console.log('Missing userId or appKey');
+    //   return;
+    // }
 
-  try {
-    // 🔒 prevent duplicate execution per socket
-    if (client.data.initialized) return;
-    client.data.initialized = true;
 
-    await masterPrisma.$transaction(async (tx) => {
-      const existing = await tx.gameOngoingUsers.findUnique({
-        where: { userId },
+    try {
+      // 🔒 prevent duplicate execution per socket
+      if (client.data.initialized) return;
+      client.data.initialized = true;
+
+      await masterPrisma.$transaction(async (tx) => {
+        const existing = await tx.gameOngoingUsers.findUnique({
+          where: { userId },
+        });
+
+        if (existing) {
+          await tx.gameOngoingUsers.update({
+            where: { userId },
+            data: {
+              socketId: client.id,
+              appKey,
+              token,
+              updatedAt: new Date(),
+            },
+          });
+        } else {
+          await tx.gameOngoingUsers.create({
+            data: {
+              userId,
+              socketId: client.id,
+              appKey,
+              token
+            },
+          });
+        }
       });
 
-      if (existing) {
-        await tx.gameOngoingUsers.update({
-          where: { userId },
-          data: {
-            socketId: client.id,
-            appKey,
-            token,
-            updatedAt: new Date(),
-          },
-        });
-      } else {
-        await tx.gameOngoingUsers.create({
-          data: {
-            userId,
-            socketId: client.id,
-            appKey,
-            token
-          },
-        });
+
+    } catch (err) {
+      if (err.code === 'P2002') {
+        console.warn(`Duplicate connection ignored for userId ${userId}`);
+        return;
       }
-    });
 
-    console.log(`SocketId ${client.id} saved for userId ${userId}`);
-
-  } catch (err) {
-    if (err.code === 'P2002') {
-      console.warn(`Duplicate connection ignored for userId ${userId}`);
-      return;
+      console.error('DB error:', err);
     }
 
-    console.error('DB error:', err);
   }
-
-  console.log(`Client connected: ${client.id} userId ${userId}`);
-}
 
 
   async handleDisconnect(client: Socket) {
@@ -135,10 +131,10 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
 
     const phases = [
-      { name: 'bettingTimer', duration: 30 },
-      { name: 'winningCalculationTimer', duration: 3 },
-      { name: 'resultAnnounceTimer', duration: 3 },
-      { name: 'newGameStartTimer', duration: 3 },
+      { name: 'bettingTimer', duration: 20 },
+      { name: 'winningCalculationTimer', duration: 5 },
+      { name: 'resultAnnounceTimer', duration: 7 },
+      { name: 'newGameStartTimer', duration: 7 },
     ];
 
     while (true) {
@@ -164,7 +160,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           this.announceWinningSent = true;
           this.announceGameResult();
         }
-        console.log(` Phase completed: ${phase.name}`);
       }
 
       // after all timers finish, loop restarts (new game cycle)
@@ -182,12 +177,12 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       gameId?: string;
       potIndex?: number;
       socketId: string;
-      tenantBaseURL?:string;
+      tenantBaseURL?: string;
 
     }) {
     const betId = uuidv4();
     const timestamp = Date.now();
-    const { userId, amount, betType, token, gameId, potIndex, socketId,tenantBaseURL } = bet
+    const { userId, amount, betType, token, gameId, potIndex, socketId, tenantBaseURL } = bet
     //call api
     let submitFlowData = {
       "betAmount": amount,
@@ -205,21 +200,20 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       timeout: 10000,
     }
     );
-          //prisma game ongoging users get socket id by user id
-    console.log("API response received:", response.data);
+    //prisma game ongoging users get socket id by user id
     const apiData = response.data;
-      let userSocketId= await masterPrisma.gameOngoingUsers.findFirst({
-        where: { userId },  
-        select: {
-          socketId: true,
-        },  
-      });
-      if (!userSocketId || !userSocketId.socketId) {
-        console.log("SocketId not found for userId:", userId);
-        return;
-      }
-    if(apiData.success==false){
-       this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
+    let userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
+      where: { userId },
+      select: {
+        socketId: true,
+      },
+    });
+    if (!userSocketId || !userSocketId.socketId) {
+      console.log("SocketId not found for userId:", userId);
+      return;
+    }
+    if (apiData.success == false) {
+      this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
         success: apiData.success,
         message: apiData.message,
         data: {
@@ -243,7 +237,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     try {
       // Produce to Kafka (async, non-blocking)
       await this.kafka.produce('teenpatti', enrichedBet);
-  
+
       // console.log("Emitting bet response to socketId:", userSocketId.socketId);
       this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
         success: apiData.success,
@@ -367,9 +361,135 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     return results;
   }
 
+
+
+  ///winning probability
+  private readonly SUITS = ['S', 'H', 'D', 'C'];
+  private readonly RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
+
+  public buildDeck(): string[] {
+    const deck: string[] = [];
+    for (const r of this.RANKS) {
+      for (const s of this.SUITS) {
+        deck.push(`${r}${s}.png`);
+      }
+    }
+    return deck;
+  }
+  private rankValue(card: string): number {
+    const r = card[0];
+    if (r === 'A') return 14;
+    if (r === '0') return 10;
+    if (r === 'J') return 11;
+    if (r === 'Q') return 12;
+    if (r === 'K') return 13;
+    return parseInt(r);
+  }
+  private isSequence(cards: string[]): boolean {
+    const ranks = cards
+      .map(c => this.rankValue(c))
+      .sort((a, b) => a - b);
+
+    // Normal sequence
+    if (ranks[1] === ranks[0] + 1 && ranks[2] === ranks[1] + 1) return true;
+
+    // A-2-3 special case
+    return ranks.includes(14) && ranks.includes(2) && ranks.includes(3);
+  }
+  private isFlush(cards: string[]): boolean {
+    return new Set(cards.map(c => this.suitOf(c))).size === 1;
+  }
+
+  private suitOf(card: string): string {
+    return card[1];
+  }
+
+  public shuffle<T>(arr: T[]): T[] {
+    return arr.sort(() => Math.random() - 0.5);
+  }
+
+  public draw(deck: string[], count: number): string[] {
+    return deck.splice(0, count);
+  }
+
+  public rankOf(card: string): string {
+    return card[0]; // "A", "9", "0", "K"
+  }
+public createPairHand(deck: string[]): string[] {
+  while (true) {
+    const rankGroups: Record<string, string[]> = {};
+
+    deck.forEach(card => {
+      const r = card[0];
+      rankGroups[r] = rankGroups[r] || [];
+      rankGroups[r].push(card);
+    });
+
+    const pairRank = Object.keys(rankGroups).find(r => rankGroups[r].length >= 2);
+    if (!pairRank) continue;
+
+    const pairCards = rankGroups[pairRank].slice(0, 2);
+
+    const kicker = deck.find(
+      c =>
+        c[0] !== pairRank &&
+        !this.isSequence([...pairCards, c]) &&
+        !this.isFlush([...pairCards, c])
+    );
+
+    if (!kicker) continue;
+
+    deck.splice(deck.indexOf(pairCards[0]), 1);
+    deck.splice(deck.indexOf(pairCards[1]), 1);
+    deck.splice(deck.indexOf(kicker), 1);
+
+    return [...pairCards, kicker];
+  }
+}
+public createHighCardHand(deck: string[]): string[] {
+  while (true) {
+    const cards = deck.splice(0, 3);
+
+    const ranks = cards.map(c => c[0]);
+    const uniqueRanks = new Set(ranks);
+
+    if (
+      uniqueRanks.size === 3 &&
+      !this.isSequence(cards) &&
+      !this.isFlush(cards)
+    ) {
+      return cards;
+    }
+
+    deck.push(...cards);
+    this.shuffle(deck);
+  }
+}
+public generateTeenPattiResult() {
+  const deck = this.shuffle(this.buildDeck());
+
+  const winnerCards = this.createPairHand(deck);
+  const loserCardsA = this.createHighCardHand(deck);
+  const loserCardsB = this.createHighCardHand(deck);
+
+  return {
+    winner: {
+      cards: winnerCards,
+      losers: {
+        cardsA: loserCardsA,
+        cardsB: loserCardsB
+      }
+    }
+  };
+}
+
   @SubscribeMessage('teenpattiAnnounceGameResult')
   async announceGameResult() {
     let winningPotIndex = this.teenpattiGameProbability();
+    const  result  = this.generateTeenPattiResult();
+    console.log("result.winners:", result.winner.cards)
+    console.log("result.losers:", result.winner.losers)
+
     let winnningExpPercentage = {
       0: 1.9,
       1: 2.9,
@@ -405,7 +525,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       const winningMessage = {
         userId,
         winningAmount: expectedWinningAmount[userId], // correct amount
-        betType:2,
+        betType: 2,
         winningPotIndex
       };
       if (socketId) {
@@ -430,7 +550,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           timeout: 4000,
         }
         );
-        console.log("response:",response.data)
+
         if (response.statusText == "OK") {
           //added     
         } else {
@@ -479,15 +599,12 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         winners: winnersUserResponse,
         winningPot: potName,
         winningPotIndex: winningPotIndex,
-        winningCards: [
-          'https://deckofcardsapi.com/static/img/AS.png',
-          'https://deckofcardsapi.com/static/img/2S.png',
-          'https://deckofcardsapi.com/static/img/3S.png',
-        ],
+        winningCards: result.winner.cards,
+        loserCards: result.winner.losers,
         winningPotRankText: 'Pair',
       },
     };
-    this.server.emit('teenpattiAnnounceGameResultResponse', response);
+    this.server.emit('teenpattiAnnounceResultResponse', response);
     // refresh for next game
     await masterPrisma.ongoingTeenpattiGame.deleteMany({});
 
@@ -514,67 +631,65 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   //   return { success: true, users: this.Users };
   // }
   @SubscribeMessage('teenpattiGameTableJoin')
-async gameTeenpattiJoin(
-  @ConnectedSocket() client: Socket,
-  @MessageBody() user: {
-    userId: string;
-    name: string;
-    imageProfile: string;
-    appKey: string;
-    token: string;
-  }
-) {
-  try {
-    const userId = String(user.userId);
+  async gameTeenpattiJoin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() user: {
+      userId: string;
+      name: string;
+      imageProfile: string;
+      appKey: string;
+      token: string;
+    }
+  ) {
+    try {
+      const userId = String(user.userId);
 
-    await masterPrisma.gameOngoingUsers.upsert({
-      where: { userId },
-      update: {
-        name: user.name,
-        profilePicture: user.imageProfile,
-        appKey: user.appKey,
-      },
-      create: {
-        userId,
-        name: user.name,
-        profilePicture: user.imageProfile,
-        appKey: user.appKey,
-      },
-    });
+      await masterPrisma.gameOngoingUsers.upsert({
+        where: { userId },
+        update: {
+          name: user.name,
+          profilePicture: user.imageProfile,
+          appKey: user.appKey,
+        },
+        create: {
+          userId,
+          name: user.name,
+          profilePicture: user.imageProfile,
+          appKey: user.appKey,
+        },
+      });
 
-    const dummyPlayers = [
-      { userId: 'gzvISjgXLW', name: 'Alex', profilePicture: 'https://randomuser.me/api/portraits/women/1.jpg' },
-      { userId: 'sdBPg21sbL', name: 'Max', profilePicture: 'https://randomuser.me/api/portraits/men/2.jpg' },
-      { userId: 'EscjvllJMV', name: 'Zabir', profilePicture: 'https://randomuser.me/api/portraits/men/3.jpg' },
-      { userId: 'YZPiqFzhZ1', name: 'Waseem', profilePicture: 'https://randomuser.me/api/portraits/men/4.jpg' },
-    ];
+      const dummyPlayers = [
+        { userId: 'gzvISjgXLW', name: 'Alex', profilePicture: 'https://randomuser.me/api/portraits/women/1.jpg' },
+        { userId: 'sdBPg21sbL', name: 'Max', profilePicture: 'https://randomuser.me/api/portraits/men/2.jpg' },
+        { userId: 'EscjvllJMV', name: 'Zabir', profilePicture: 'https://randomuser.me/api/portraits/men/3.jpg' },
+        { userId: 'YZPiqFzhZ1', name: 'Waseem', profilePicture: 'https://randomuser.me/api/portraits/men/4.jpg' },
+      ];
 
-    const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
-    const combinedUsers = [...usersInGame, ...dummyPlayers];
+      const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
+      const combinedUsers = [...usersInGame, ...dummyPlayers];
 
-    // ✅ Single room for table
-    let userSocketId= await masterPrisma.gameOngoingUsers.findFirst({
-        where: { userId },  
+      // ✅ Single room for table
+      let userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
+        where: { userId },
         select: {
           socketId: true,
-        },  
+        },
       });
       if (!userSocketId || !userSocketId.socketId) {
-        console.log("SocketId not found for userId:", userId);
         return;
       }
-      console.log("user",user,"userSocet:",userSocketId)
-     this.server.emit('teenpattiGameTableUpdate', {
-      users: combinedUsers,
-    });
+      this.server.emit('teenpattiGameTableUpdate', {
+        users: combinedUsers,
+      });
 
-    return { success: true, users: combinedUsers };
+      return { success: true, users: combinedUsers };
 
-  } catch (err: any) {
-    console.error('Teen Patti Join Error:', err);
-    return { success: false, users: [], message: err.message };
+    } catch (err: any) {
+      console.error('Teen Patti Join Error:', err);
+      return { success: false, users: [], message: err.message };
+    }
   }
-}
 
 
   // @SubscribeMessage('mySocketId')
