@@ -116,9 +116,9 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   public running = false;
   public announceWinningSent = false;
   public Users = [
-    { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/65.jpg', socketId: "" },
-    { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/66.jpg', socketId: "" },
-    { userId: 'user_103', name: 'Charlie', imageProfile: 'https://randomuser.me/api/portraits/men/67.jpg', socketId: "" },
+    { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/55.jpg', socketId: "" },
+    { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/98.jpg', socketId: "" },
+    { userId: 'user_103', name: 'Charlie', imageProfile: 'https://randomuser.me/api/portraits/men/78.jpg', socketId: "" },
     // { userId: 'user_105', name: 'Max', imageProfile: 'https://randomuser.me/api/portraits/men/68.jpg' },
     // { userId: 'user_108', name: 'Alex', imageProfile: 'https://randomuser.me/api/portraits/men/70.jpg' },
     // { userId: 'user_108', name: 'Alex', imageProfile: 'https://randomuser.me/api/portraits/men/70.jpg' },
@@ -132,9 +132,9 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
     const phases = [
       { name: 'bettingTimer', duration: 20 },
-      { name: 'winningCalculationTimer', duration: 5 },
-      { name: 'resultAnnounceTimer', duration: 7 },
-      { name: 'newGameStartTimer', duration: 7 },
+      { name: 'winningCalculationTimer', duration: 4 },
+      { name: 'resultAnnounceTimer', duration: 5 },
+      { name: 'newGameStartTimer', duration: 3 },
     ];
 
     while (true) {
@@ -360,9 +360,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
     return results;
   }
-
-
-
   ///winning probability
   private readonly SUITS = ['S', 'H', 'D', 'C'];
   private readonly RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
@@ -539,7 +536,7 @@ public generateTeenPattiResult() {
           "transactionId": uuidv4()
         }
 
-        const baseURL = "https://wavegame.ricolivee.vip/"
+        const baseURL = "https://joygames.ricolivee.vip/"
         const endPoint = "wave/game/submitFlow";
         const response = await axios.post(
           `${baseURL}${endPoint}`, submitFlowData, {
@@ -576,20 +573,44 @@ public generateTeenPattiResult() {
         // socketId: true,  
       },
     });
-    const winnersUserResponse = winnersDbRecords.map(user => ({
+    const REQUIRED_WINNERS = 3;
+
+    let winnersUserResponse = winnersDbRecords.map(user => ({
       userId: user.userId,
       amountWon: expectedWinningAmount[user.userId] || 0,
       gameId: 16,
       imageProfile: user.profilePicture || null,
     }));
+    if (winnersUserResponse.length < REQUIRED_WINNERS) {
+      const needed = REQUIRED_WINNERS - winnersUserResponse.length;
 
+      // avoid duplicate userIds
+      const existingIds = new Set(winnersUserResponse.map(w => w.userId));
+      const getRandomAmount = (min = 2000, max = 70000) =>
+        Math.floor(Math.random() * (max - min + 1)) + min;
+
+      const fakeWinners = this.Users
+        .filter(u => !existingIds.has(u.userId))
+        .slice(0, needed)
+        .map(u => ({
+          userId: u.userId,
+          amountWon: getRandomAmount(2000, 70000),
+          gameId: 16,
+          imageProfile: u.imageProfile,
+        }));
+
+      winnersUserResponse = [
+        ...winnersUserResponse,
+        ...fakeWinners,
+      ];
+    }
     let potName;
     if (winningPotIndex == 0) {
-      potName = "Pot 1"
+      potName = "Pot A"
     } else if (winningPotIndex == 1) {
-      potName = "Pot 1"
+      potName = "Pot B"
     } else if (winningPotIndex == 2) {
-      potName = "Pot 3"
+      potName = "Pot C"
     }
     // Public broadcast response
     const response = {
@@ -604,7 +625,7 @@ public generateTeenPattiResult() {
         winningPotRankText: 'Pair',
       },
     };
-    this.server.emit('teenpattiAnnounceResultResponse', response);
+    this.server.emit('teenpattiAnnounceGameResultResponse', response);
     // refresh for next game
     await masterPrisma.ongoingTeenpattiGame.deleteMany({});
 
