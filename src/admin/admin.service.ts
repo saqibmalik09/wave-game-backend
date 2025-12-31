@@ -227,7 +227,7 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
         environemnt: "production",
         tenantAppKey: "Eeb1GshW3a",
         tenantProductionDomain: "https://joygames.ricolivee.vip",
-        tenantTestingDomain: "https://wavegame.ricolivee.vip",
+        tenantTestingDomain: "https://joygames.ricolivee.vip",
         tenantPassword: "24563672ER",
       },
       "b1K7dw2MZ3": {
