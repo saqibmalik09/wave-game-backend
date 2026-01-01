@@ -593,6 +593,9 @@ public generateTeenPattiResult() {
 
       // avoid duplicate userIds
       const existingIds = new Set(winnersUserResponse.map(w => w.userId));
+      const potValues = Object.values(this.potTotalBets);
+      const minPot = Math.min(...potValues);
+      const maxPot = Math.max(...potValues);
       const getRandomAmount = (min = 2000, max = 70000) =>
         Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -602,7 +605,7 @@ public generateTeenPattiResult() {
         .map(u => ({
           userId: u.userId,
           name:u.name,
-          amountWon: getRandomAmount(2000, 70000),
+          amountWon: getRandomAmount(minPot, maxPot ),
           gameId: 16,
           imageProfile: u.imageProfile,
         }));
@@ -636,7 +639,11 @@ public generateTeenPattiResult() {
     this.server.emit('teenpattiAnnounceGameResultResponse', response);
     // refresh for next game
     await masterPrisma.ongoingTeenpattiGame.deleteMany({});
-
+    this.potTotalBets = {
+      0: 0,
+      1: 0,
+      2: 0,
+    };
     return response;
   }
 
