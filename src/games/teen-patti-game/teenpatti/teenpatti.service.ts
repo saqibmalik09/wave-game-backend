@@ -488,9 +488,9 @@ public generateTeenPattiResult() {
     console.log("result.losers:", result.winner.losers)
 
     let winnningExpPercentage = {
-      0: 1.9,
+      0: 2.9,
       1: 2.9,
-      2: 2.2
+      2: 2.9
     };
     //  Get userIds and their total bet for that potIndex
     const winnerIdsAndTotalBet = await this.playerIdAndTotalBet(winningPotIndex);
@@ -569,6 +569,7 @@ public generateTeenPattiResult() {
       },
       select: {
         userId: true,
+        name: true,
         profilePicture: true,
         // socketId: true,  
       },
@@ -577,6 +578,7 @@ public generateTeenPattiResult() {
 
     let winnersUserResponse = winnersDbRecords.map(user => ({
       userId: user.userId,
+      name: user.name,
       amountWon: expectedWinningAmount[user.userId] || 0,
       gameId: 16,
       imageProfile: user.profilePicture || null,
@@ -594,6 +596,7 @@ public generateTeenPattiResult() {
         .slice(0, needed)
         .map(u => ({
           userId: u.userId,
+          name:u.name,
           amountWon: getRandomAmount(2000, 70000),
           gameId: 16,
           imageProfile: u.imageProfile,
