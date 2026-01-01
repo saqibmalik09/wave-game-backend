@@ -242,7 +242,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       const index = Number(potIndex);
       this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
       this.server.emit('potTotalBets', this.potTotalBets);
-
+      console.log("potTotalBets:",this.potTotalBets)
       // console.log("Emitting bet response to socketId:", userSocketId.socketId);
       this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
         success: apiData.success,
