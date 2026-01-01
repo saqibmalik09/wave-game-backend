@@ -115,6 +115,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
   public running = false;
   public announceWinningSent = false;
+  public potTotalBets: Record<number, number> = {};
   public Users = [
     { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/55.jpg', socketId: "" },
     { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/98.jpg', socketId: "" },
@@ -237,6 +238,10 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     try {
       // Produce to Kafka (async, non-blocking)
       await this.kafka.produce('teenpatti', enrichedBet);
+  
+      const index = Number(potIndex);
+      this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
+      this.server.emit('potTotalBets', this.potTotalBets);
 
       // console.log("Emitting bet response to socketId:", userSocketId.socketId);
       this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
