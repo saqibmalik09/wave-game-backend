@@ -115,7 +115,14 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
   public running = false;
   public announceWinningSent = false;
-  public potTotalBets: Record<number, number> = {};
+  public potTotalBets: Record<number, number> = {
+    0: 0,
+    1: 0,
+    2: 0,
+  };
+  public winningPotHistory: string[] = [];
+
+
   public Users = [
     { userId: 'user_101', name: 'Alice', imageProfile: 'https://randomuser.me/api/portraits/women/55.jpg', socketId: "" },
     { userId: 'user_102', name: 'Bob', imageProfile: 'https://randomuser.me/api/portraits/men/98.jpg', socketId: "" },
@@ -139,7 +146,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     ];
 
     while (true) {
-       this.announceWinningSent = false;
+      this.announceWinningSent = false;
       for (const phase of phases) {
         for (let remaining = phase.duration; remaining >= 0; remaining--) {
           // broadcast remaining seconds to all clients
@@ -158,10 +165,9 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           phase: phase.name,
           message: `${phase.name} completed.`,
         });
-      if (phase.name === 'winningCalculationTimer' && !this.announceWinningSent) {
+        if (phase.name === 'winningCalculationTimer' && !this.announceWinningSent) {
           this.announceWinningSent = true;
-          console.log('Announcing game result now...');
-           await this.announceGameResult();
+          await this.announceGameResult();
         }
       }
 
@@ -240,11 +246,11 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     try {
       // Produce to Kafka (async, non-blocking)
       await this.kafka.produce('teenpatti', enrichedBet);
-  
+
       const index = Number(potIndex);
       this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
       this.server.emit('potTotalBets', this.potTotalBets);
-      console.log("potTotalBets:",this.potTotalBets)
+      console.log("potTotalBets:", this.potTotalBets)
       // console.log("Emitting bet response to socketId:", userSocketId.socketId);
       this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
         success: apiData.success,
@@ -330,10 +336,104 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     };
   }
 
-  public teenpattiGameProbability(): number {
-    const options = [0, 1, 2];
-    const randomIndex = Math.floor(Math.random() * options.length);
-    return options[randomIndex];
+  // public teenpattiGameProbability(): number {
+  //   const options = [0, 1, 2];
+  //   const randomIndex = Math.floor(Math.random() * options.length);
+  //   return options[randomIndex];
+  // }
+  teenpattiGameProbability(): number {
+
+    const MAX_HISTORY = 10;
+
+    const winningProbablityChance = {
+      low: 0.4,
+      medium: 0.4,
+      high: 0.2,
+    };
+
+    /**
+     * 1️⃣ Determine LOW / MEDIUM / HIGH dynamically
+     * pot index can be anything
+     */
+    const sortedPots = Object.entries(this.potTotalBets)
+      .map(([index, amount]) => ({
+        index: Number(index),
+        amount: Number(amount),
+      }))
+      .sort((a, b) => a.amount - b.amount);
+
+    // safety check
+    if (sortedPots.length !== 3) {
+      throw new Error('Exactly 3 pots are required');
+    }
+
+    const categoryMap: Record<'low' | 'medium' | 'high', number> = {
+      low: sortedPots[0].index,      // lowest bet pot
+      medium: sortedPots[1].index,   // middle bet pot
+      high: sortedPots[2].index,     // highest bet pot
+    };
+
+    /**
+     * 2️⃣ Count last 10 winning categories
+     */
+    const historyCount = {
+      low: 0,
+      medium: 0,
+      high: 0,
+    };
+
+    for (const h of this.winningPotHistory) {
+      if (historyCount[h] !== undefined) {
+        historyCount[h]++;
+      }
+    }
+
+    /**
+     * 3️⃣ Max allowed wins in last 10
+     */
+    const maxAllowed = {
+      low: Math.round(winningProbablityChance.low * MAX_HISTORY),       // 4
+      medium: Math.round(winningProbablityChance.medium * MAX_HISTORY), // 4
+      high: Math.round(winningProbablityChance.high * MAX_HISTORY),     // 2
+    };
+
+    /**
+     * 4️⃣ Eligible categories (not exceeding quota)
+     */
+    let eligibleCategories = (Object.keys(maxAllowed) as Array<'low' | 'medium' | 'high'>)
+      .filter(cat => historyCount[cat] < maxAllowed[cat]);
+
+    // fallback (rare case)
+    if (eligibleCategories.length === 0) {
+      eligibleCategories = ['low', 'medium', 'high'];
+    }
+
+    /**
+     * 5️⃣ Weighted random selection
+     */
+    const totalWeight = eligibleCategories
+      .reduce((sum, cat) => sum + winningProbablityChance[cat], 0);
+
+    let rand = Math.random() * totalWeight;
+
+    let selectedCategory: 'low' | 'medium' | 'high' = eligibleCategories[0];
+    for (const cat of eligibleCategories) {
+      rand -= winningProbablityChance[cat];
+      if (rand <= 0) {
+        selectedCategory = cat;
+        break;
+      }
+    }
+
+    /**
+     * 6️⃣ Save history (last 10)
+     */
+    this.winningPotHistory.push(selectedCategory);
+    if (this.winningPotHistory.length > MAX_HISTORY) {
+      this.winningPotHistory.shift();
+    }
+
+    return categoryMap[selectedCategory];
   }
   public async playerIdAndTotalBet(potIndex: number): Promise<Record<string, number>> {
     // Group by userId and sum their bet amounts
@@ -419,78 +519,79 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   public rankOf(card: string): string {
     return card[0]; // "A", "9", "0", "K"
   }
-public createPairHand(deck: string[]): string[] {
-  while (true) {
-    const rankGroups: Record<string, string[]> = {};
+  public createPairHand(deck: string[]): string[] {
+    while (true) {
+      const rankGroups: Record<string, string[]> = {};
 
-    deck.forEach(card => {
-      const r = card[0];
-      rankGroups[r] = rankGroups[r] || [];
-      rankGroups[r].push(card);
-    });
+      deck.forEach(card => {
+        const r = card[0];
+        rankGroups[r] = rankGroups[r] || [];
+        rankGroups[r].push(card);
+      });
 
-    const pairRank = Object.keys(rankGroups).find(r => rankGroups[r].length >= 2);
-    if (!pairRank) continue;
+      const pairRank = Object.keys(rankGroups).find(r => rankGroups[r].length >= 2);
+      if (!pairRank) continue;
 
-    const pairCards = rankGroups[pairRank].slice(0, 2);
+      const pairCards = rankGroups[pairRank].slice(0, 2);
 
-    const kicker = deck.find(
-      c =>
-        c[0] !== pairRank &&
-        !this.isSequence([...pairCards, c]) &&
-        !this.isFlush([...pairCards, c])
-    );
+      const kicker = deck.find(
+        c =>
+          c[0] !== pairRank &&
+          !this.isSequence([...pairCards, c]) &&
+          !this.isFlush([...pairCards, c])
+      );
 
-    if (!kicker) continue;
+      if (!kicker) continue;
 
-    deck.splice(deck.indexOf(pairCards[0]), 1);
-    deck.splice(deck.indexOf(pairCards[1]), 1);
-    deck.splice(deck.indexOf(kicker), 1);
+      deck.splice(deck.indexOf(pairCards[0]), 1);
+      deck.splice(deck.indexOf(pairCards[1]), 1);
+      deck.splice(deck.indexOf(kicker), 1);
 
-    return [...pairCards, kicker];
-  }
-}
-public createHighCardHand(deck: string[]): string[] {
-  while (true) {
-    const cards = deck.splice(0, 3);
-
-    const ranks = cards.map(c => c[0]);
-    const uniqueRanks = new Set(ranks);
-
-    if (
-      uniqueRanks.size === 3 &&
-      !this.isSequence(cards) &&
-      !this.isFlush(cards)
-    ) {
-      return cards;
+      return [...pairCards, kicker];
     }
-
-    deck.push(...cards);
-    this.shuffle(deck);
   }
-}
-public generateTeenPattiResult() {
-  const deck = this.shuffle(this.buildDeck());
+  public createHighCardHand(deck: string[]): string[] {
+    while (true) {
+      const cards = deck.splice(0, 3);
 
-  const winnerCards = this.createPairHand(deck);
-  const loserCardsA = this.createHighCardHand(deck);
-  const loserCardsB = this.createHighCardHand(deck);
+      const ranks = cards.map(c => c[0]);
+      const uniqueRanks = new Set(ranks);
 
-  return {
-    winner: {
-      cards: winnerCards,
-      losers: {
-        cardsA: loserCardsA,
-        cardsB: loserCardsB
+      if (
+        uniqueRanks.size === 3 &&
+        !this.isSequence(cards) &&
+        !this.isFlush(cards)
+      ) {
+        return cards;
       }
+
+      deck.push(...cards);
+      this.shuffle(deck);
     }
-  };
-}
+  }
+  public generateTeenPattiResult() {
+    const deck = this.shuffle(this.buildDeck());
+
+    const winnerCards = this.createPairHand(deck);
+    const loserCardsA = this.createHighCardHand(deck);
+    const loserCardsB = this.createHighCardHand(deck);
+
+    return {
+      winner: {
+        cards: winnerCards,
+        losers: {
+          cardsA: loserCardsA,
+          cardsB: loserCardsB
+        }
+      }
+    };
+  }
 
   @SubscribeMessage('teenpattiAnnounceGameResult')
   async announceGameResult() {
     let winningPotIndex = this.teenpattiGameProbability();
-    const  result  = this.generateTeenPattiResult();
+    console.log("Determined winningPotIndex:", winningPotIndex);
+    const result = this.generateTeenPattiResult();
     console.log("result.winners:", result.winner.cards)
     console.log("result.losers:", result.winner.losers)
 
@@ -606,8 +707,8 @@ public generateTeenPattiResult() {
         .slice(0, needed)
         .map(u => ({
           userId: u.userId,
-          name:u.name,
-          amountWon: getRandomAmount(minPot, maxPot ),
+          name: u.name,
+          amountWon: getRandomAmount(minPot, maxPot),
           gameId: 16,
           imageProfile: u.imageProfile,
         }));
