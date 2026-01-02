@@ -133,16 +133,17 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
     const phases = [
       { name: 'bettingTimer', duration: 20 },
-      { name: 'winningCalculationTimer', duration: 4 },
-      { name: 'resultAnnounceTimer', duration: 5 },
+      { name: 'winningCalculationTimer', duration: 3 },
+      { name: 'resultAnnounceTimer', duration: 6 },
       { name: 'newGameStartTimer', duration: 3 },
     ];
 
     while (true) {
+       this.announceWinningSent = false;
       for (const phase of phases) {
         for (let remaining = phase.duration; remaining >= 0; remaining--) {
           // broadcast remaining seconds to all clients
-          if (phase.name !== 'resultAnnounceTimer') {
+          if (phase.name !== 'winningCalculationTimer') {
             this.announceWinningSent = false;
           }
           this.server.emit('teenpattiTimer', {
@@ -157,9 +158,10 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           phase: phase.name,
           message: `${phase.name} completed.`,
         });
-        if (phase.name === 'resultAnnounceTimer' && !this.announceWinningSent) {
+      if (phase.name === 'winningCalculationTimer' && !this.announceWinningSent) {
           this.announceWinningSent = true;
-          this.announceGameResult();
+          console.log('Announcing game result now...');
+           await this.announceGameResult();
         }
       }
 
