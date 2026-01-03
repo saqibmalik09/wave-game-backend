@@ -77,7 +77,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           });
         }
       });
-
+      await client.join(`user:${userId}`);
 
     } catch (err) {
       if (err.code === 'P2002') {
@@ -102,7 +102,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         await masterPrisma.gameOngoingUsers.delete({
           where: { userId: user.userId },
         });
-
+          await client.join(`user:${user.userId}`);
         console.log(`Deleted disconnected user: ${user.userId}`);
       } else {
         console.log(`No user found with socketId: ${client.id}`);
@@ -222,7 +222,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          timeout: 3000,
+          timeout: 4000,
         },
       );
 
@@ -232,7 +232,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     
 
       if (apiData.success === false) {
-        this.server.to(socketID).emit('teenpattiBetResponse', {
+        this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
           success: false,
           message: apiData.message,
           data: {
@@ -241,7 +241,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
             amount,
           },
         });
-        return;
       }
 
       // 🔹 SUCCESS
@@ -249,8 +248,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         const index = Number(potIndex);
         this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
         this.server.emit('potTotalBets', this.potTotalBets);
-
-        this.server.to(socketID).emit('teenpattiBetResponse', {
+        this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
           success: true,
           message: apiData.message,
           data: {
@@ -259,6 +257,17 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
             amount,
           },
         });
+
+
+        // this.server.to(socketID).emit('teenpattiBetResponse', {
+        //   success: true,
+        //   message: apiData.message,
+        //   data: {
+        //     ...apiData.data,
+        //     potIndex,
+        //     amount,
+        //   },
+        // });
 
         // POT NAME
         let potName = '';
@@ -280,7 +289,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           });
         }
       } else {
-        this.server.to(socketID).emit('teenpattiBetResponse', {
+        this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
           success: false,
           message: apiData.message,
           data: {
@@ -313,7 +322,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       console.log('socketID:', socketID);
       if (socketID) {
         // 
-       this.server.emit('teenpattiBetResponse', { success: false, message });
+      this.server.to(`user:${userId}`).emit('teenpattiBetResponse', { success: false, message });
       }
     }
   }
@@ -675,7 +684,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         winningPotIndex
       };
       if (socketId) {
-        this.server.to(socketId).emit("toWinnerMessage", winningMessage);
+        this.server.to(`user:${userId}`).emit("toWinnerMessage", winningMessage);
       }
       try {
 
@@ -716,7 +725,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           message = err.message;
         }
         if (socketId) {
-          this.server.to(socketId).emit('teenpattiBetResponse', { success: false, message });
+          this.server.to(`user:${userId}`).emit('teenpattiBetResponse', { success: false, message });
         }
       }
 
