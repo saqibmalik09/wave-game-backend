@@ -102,7 +102,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         await masterPrisma.gameOngoingUsers.delete({
           where: { userId: user.userId },
         });
-
+          await client.join(`user:${user.userId}`);
         console.log(`Deleted disconnected user: ${user.userId}`);
       } else {
         console.log(`No user found with socketId: ${client.id}`);
