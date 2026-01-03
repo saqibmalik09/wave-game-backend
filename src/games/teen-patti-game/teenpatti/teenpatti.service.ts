@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { KafkaService } from 'src/kafka/kafka.service';
 import { v4 as uuidv4 } from 'uuid';
 import {
   WebSocketGateway,
@@ -27,7 +26,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   private betCount = 0;
   private startTime = Date.now();
 
-  constructor(private readonly kafka: KafkaService) {
+  constructor() {
     setInterval(() => this.logThroughput(), 5000);
   }
   @WebSocketServer()
@@ -187,89 +186,135 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       potIndex?: number;
       socketId: string;
       tenantBaseURL?: string;
-
-    }) {
+    },
+  ) {
     const betId = uuidv4();
     const timestamp = Date.now();
-    const { userId, amount, betType, token, gameId, potIndex, socketId, tenantBaseURL } = bet
-    //call api
-    let submitFlowData = {
-      "betAmount": amount,
-      "type": betType,
-      "transactionId": betId
-    }
-    const baseURL = tenantBaseURL
-    const endPoint = "/wave/game/submitFlow";
-    const response = await axios.post(
-      `${baseURL}${endPoint}`, submitFlowData, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      timeout: 10000,
-    }
-    );
-    //prisma game ongoging users get socket id by user id
-    const apiData = response.data;
-    let userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
-      where: { userId },
-      select: {
-        socketId: true,
-      },
-    });
-    if (!userSocketId || !userSocketId.socketId) {
-      console.log("SocketId not found for userId:", userId);
-      return;
-    }
-    if (apiData.success == false) {
-      this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
-        success: apiData.success,
-        message: apiData.message,
-        data: {
-          ...apiData.data,
-          potIndex,
-          amount
-        },
-      });
-      return;
-    }
-    const playerNewBalance = apiData.data.balance;
-    const enrichedBet = {
-      betId,
-      ...bet,
-      game: 'teenpatti',
-      timestamp,
-      status: 'pending',
-      newBalance: playerNewBalance,
+
+    const { userId, amount, betType, token, gameId, potIndex, tenantBaseURL } = bet;
+
+    const submitFlowData = {
+      betAmount: amount,
+      type: betType,
+      transactionId: betId,
     };
-
-    try {
-      // Produce to Kafka (async, non-blocking)
-      await this.kafka.produce('teenpatti', enrichedBet);
-
-      const index = Number(potIndex);
-      this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
-      this.server.emit('potTotalBets', this.potTotalBets);
-      console.log("potTotalBets:", this.potTotalBets)
-      // console.log("Emitting bet response to socketId:", userSocketId.socketId);
-      this.server.to(userSocketId.socketId).emit('teenpattiBetResponse', {
-        success: apiData.success,
-        message: apiData.message,
-        data: {
-          ...apiData.data,
-          potIndex,
-          amount
-        },
+    let socketID = '';
+    let message = '';
+    let apiData: any;
+    const userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
+        where: { userId },
+        select: { socketId: true },
       });
+
+      if (!userSocketId?.socketId) {
+        console.log('SocketId not found for userId:', userId);
+        return;
+      }
+
+    socketID = userSocketId.socketId;
+    try {
+      // 🔹 API CALL
+      const response = await axios.post(
+        `${tenantBaseURL}/wave/game/submitFlow`,
+        submitFlowData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 3000,
+        },
+      );
+
+      apiData = response.data;
+
+      // 🔹 GET SOCKET ID
+    
+
+      if (apiData.success === false) {
+        this.server.to(socketID).emit('teenpattiBetResponse', {
+          success: false,
+          message: apiData.message,
+          data: {
+            ...apiData.data,
+            potIndex,
+            amount,
+          },
+        });
+        return;
+      }
+
+      // 🔹 SUCCESS
+      if (response.data?.success === true) {
+        const index = Number(potIndex);
+        this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
+        this.server.emit('potTotalBets', this.potTotalBets);
+
+        this.server.to(socketID).emit('teenpattiBetResponse', {
+          success: true,
+          message: apiData.message,
+          data: {
+            ...apiData.data,
+            potIndex,
+            amount,
+          },
+        });
+
+        // POT NAME
+        let potName = '';
+        if (bet.potIndex === 0) potName = 'Pot 1';
+        else if (bet.potIndex === 1) potName = 'Pot 2';
+        else if (bet.potIndex === 2) potName = 'Pot 3';
+
+        // 🔹 SAVE DB
+        if (bet.gameId === '16') {
+          await masterPrisma.ongoingTeenpattiGame.create({
+            data: {
+              potIndex: Number(bet.potIndex),
+              userId: bet.userId,
+              amount: bet.amount,
+              type: bet.betType,
+              potName,
+              appKey: bet.appKey || null,
+            },
+          });
+        }
+      } else {
+        this.server.to(socketID).emit('teenpattiBetResponse', {
+          success: false,
+          message: apiData.message,
+          data: {
+            ...apiData.data,
+            potIndex,
+            amount,
+          },
+        });
+      }
 
       return {
         success: apiData.success,
         message: apiData.message,
-        data: enrichedBet,
+        data: {
+          betId,
+          timestamp,
+        },
       };
-    } catch (error) {
-      this.logger.error(`Failed to place bet ${betId}`, error.stack);
-      throw error.message;
+    } catch (err: any) {
+      console.error('Error placing bet:', err.message,"eror code:",err.code);
+      message = 'Requested server failed to respond';
+
+      if (err.code === 'ECONNABORTED') {
+        message = 'Requested server timeout';
+      } else if (!err.response) {
+        message = 'Requested server is unavailable';
+      } else if (err.message) {
+        message = err.message;
+      }
+      console.log('socketID:', socketID);
+      if (socketID) {
+        // 
+       this.server.emit('teenpattiBetResponse', { success: false, message });
+      }
     }
   }
 
@@ -293,7 +338,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     }));
 
     try {
-      await Promise.all(enrichedBets.map(bet => this.kafka.produce('teenpatti', bet)));
       this.server.emit('teenpattiBatchBetResponse', {
         success: true,
         message: `${bets.length} bets accepted for processing`,
@@ -426,7 +470,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     }
 
     /**
-     * 6️⃣ Save history (last 10)
+     *  Save history (last 10)
      */
     this.winningPotHistory.push(selectedCategory);
     if (this.winningPotHistory.length > MAX_HISTORY) {
@@ -590,10 +634,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   @SubscribeMessage('teenpattiAnnounceGameResult')
   async announceGameResult() {
     let winningPotIndex = this.teenpattiGameProbability();
-    console.log("Determined winningPotIndex:", winningPotIndex);
     const result = this.generateTeenPattiResult();
-    console.log("result.winners:", result.winner.cards)
-    console.log("result.losers:", result.winner.losers)
 
     let winnningExpPercentage = {
       0: 2.9,
@@ -652,7 +693,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
             'Authorization': `Bearer ${winnerRecord.token}`,
             'Content-Type': 'application/json',
           },
-          timeout: 4000,
+          timeout: 3000,
         }
         );
 
@@ -662,14 +703,23 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
           console.log("Failed to add win amount")
         }
 
-      } catch (error) {
-        if (error.response) {
-          console.log("Status:", error.response.status);
-          console.log("Message:", error.response.data);
-        } else {
-          console.log("Error:", error.message);
+            } catch (err: any) {
+        let message = 'Requested server failed to respond';
+
+        if (err.code === 'ECONNABORTED') {
+          message = 'Requested server timeout';
+        } else if (!err.response) {
+          message = 'Requested server is unavailable';
+        } else if (err.response?.data?.message) {
+          message = err.response.data.message;
+        } else if (err.message) {
+          message = err.message;
+        }
+        if (socketId) {
+          this.server.to(socketId).emit('teenpattiBetResponse', { success: false, message });
         }
       }
+
     }
     const winnersDbRecords = await masterPrisma.gameOngoingUsers.findMany({
       where: {
@@ -726,6 +776,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     } else if (winningPotIndex == 2) {
       potName = "Pot C"
     }
+
     // Public broadcast response
     const response = {
       success: true,
@@ -807,8 +858,6 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
       const usersInGame = await masterPrisma.gameOngoingUsers.findMany();
       const combinedUsers = [...usersInGame, ...dummyPlayers];
-
-      // ✅ Single room for table
       let userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
         where: { userId },
         select: {

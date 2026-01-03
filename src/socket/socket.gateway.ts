@@ -9,7 +9,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { TeenpattiService } from 'src/games/teen-patti-game/teenpatti/teenpatti.service';
 import { PlaceBetDto } from 'src/games/dto/place-bet.dto';
 
 @WebSocketGateway({
@@ -27,7 +26,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private connectedClients = new Map<string, Socket>();
   private tableSubscriptions = new Map<string, Set<string>>(); // tableId -> Set of socketIds
 
-  constructor(private readonly teenpattiService: TeenpattiService) {}
+  constructor() {}
 
   handleConnection(client: Socket) {
     this.connectedClients.set(client.id, client);
@@ -121,47 +120,7 @@ handleJoinTable(
   /**
    * Place a bet via WebSocket (HIGH PERFORMANCE)
    */
-  @SubscribeMessage('placeBet')
-  async handlePlaceBet(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() betData: PlaceBetDto,
-  ) {
-    try {
-      const startTime = Date.now();
-      
-      // Immediately acknowledge to client
-      client.emit('betAcknowledged', {
-        success: true,
-        userId: betData.userId,
-        timestamp: startTime,
-      });
-
-      // Process bet (sends to Kafka)
-      const result = await this.teenpattiService.placeBet(betData);
-
-      // Send confirmation back to user
-      const processingTime = Date.now() - startTime;
-      client.emit('betAccepted', {
-        ...result,
-        processingTime,
-      });
-
-      // Broadcast to table (optional - or wait for consumer to do this)
-      this.broadcastToTable(betData.userId, 'betPlaced', {
-        userId: betData.userId,
-        amount: betData.amount,
-        timestamp: Date.now(),
-      });
-
-    } catch (error) {
-      this.logger.error(`Error placing bet: ${error.message}`, error.stack);
-      client.emit('betError', {
-        success: false,
-        error: error.message,
-        userId: betData.userId,
-      });
-    }
-  }
+  
 
   /**
    * Broadcast message to all clients at a specific table
