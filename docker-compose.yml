@@ -12,15 +12,6 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - app-network
-
-  redis:
-    image: redis:7.2
-    container_name: wave-games-backend-redis
-    restart: always
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
   
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
