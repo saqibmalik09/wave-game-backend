@@ -14,6 +14,7 @@ import { Server, Socket } from 'socket.io';
 import { HttpService } from '@nestjs/axios';
 import axios from 'axios';
 import { masterPrisma } from 'src/prisma/masterClient';
+import { TeenpattiBetQueueService } from './teenpatti-bet-queue.service';
 
 @WebSocketGateway({
   cors: {
@@ -26,14 +27,17 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   private betCount = 0;
   private startTime = Date.now();
 
-  constructor() {
-    setInterval(() => this.logThroughput(), 5000);
-  }
+  constructor(private readonly betQueue: TeenpattiBetQueueService) {
+  setInterval(() => this.logThroughput(), 5000);
+}
+
   @WebSocketServer()
   server: Server;
 
   // ✅ Required WebSocket lifecycle methods
-  afterInit(server: Server) {
+   afterInit(server: Server) {
+    this.betQueue.setServer(server); // Pass server to queue service
+    this.logger.log('WebSocket Gateway initialized with BullMQ queue');
   }
 
   async handleConnection(client: Socket) {
@@ -173,7 +177,151 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       // after all timers finish, loop restarts (new game cycle)
     }
   }
-  @SubscribeMessage('placeTeenpattiBet')
+  
+
+  // @SubscribeMessage('placeTeenpattiBet')
+  // async placeBet(
+  //   @MessageBody()
+  //   bet: {
+  //     userId: string;
+  //     amount: number;
+  //     betType?: number;
+  //     appKey?: string;
+  //     token?: string;
+  //     gameId?: string;
+  //     potIndex?: number;
+  //     socketId: string;
+  //     tenantBaseURL?: string;
+  //   },
+  // ) {
+  //   const betId = uuidv4();
+  //   const timestamp = Date.now();
+
+  //   const { userId, amount, betType, token, gameId, potIndex, tenantBaseURL } = bet;
+
+  //   const submitFlowData = {
+  //     betAmount: amount,
+  //     type: betType,
+  //     transactionId: betId,
+  //   };
+  //   let socketID = '';
+  //   let message = '';
+  //   let apiData: any;
+  //   const userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
+  //       where: { userId },
+  //       select: { socketId: true },
+  //     });
+
+  //     if (!userSocketId?.socketId) {
+  //       console.log('SocketId not found for userId:', userId);
+  //       return;
+  //     }
+
+  //   socketID = userSocketId.socketId;
+  //   try {
+  //     // 🔹 API CALL
+  //     const response = await axios.post(
+  //       `${tenantBaseURL}/wave/game/submitFlow`,
+  //       submitFlowData,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           'Content-Type': 'application/json',
+  //         },
+  //         timeout: 4000,
+  //       },
+  //     );
+
+  //     apiData = response.data;
+  //     console.log(`Received apiData:`, apiData);
+
+  //     //  GET SOCKET ID
+  //     if (apiData.success === false) {
+  //       this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
+  //         success: false,
+  //         message: apiData.message,
+  //         data: {
+  //           ...apiData.data,
+  //           potIndex,
+  //           amount,
+  //         },
+  //       });
+  //     }
+
+  //     // 🔹 SUCCESS
+  //     if (response.data?.success === true) {
+  //       const index = Number(potIndex);
+  //       this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
+  //       this.server.emit('potTotalBets', this.potTotalBets);
+  //       this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
+  //         success: true,
+  //         message: apiData.message,
+  //         data: {
+  //           ...apiData.data,
+  //           potIndex,
+  //           amount,
+  //         },
+  //       });
+
+  //       // POT NAME
+  //       let potName = '';
+  //       if (bet.potIndex === 0) potName = 'Pot 1';
+  //       else if (bet.potIndex === 1) potName = 'Pot 2';
+  //       else if (bet.potIndex === 2) potName = 'Pot 3';
+
+  //       // 🔹 SAVE DB
+  //       if (bet.gameId === '16') {
+  //         await masterPrisma.ongoingTeenpattiGame.create({
+  //           data: {
+  //             potIndex: Number(bet.potIndex),
+  //             userId: bet.userId,
+  //             amount: bet.amount,
+  //             type: bet.betType,
+  //             potName,
+  //             appKey: bet.appKey || null,
+  //           },
+  //         });
+  //       }
+  //     } else {
+  //       this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
+  //         success: false,
+  //         message: apiData.message,
+  //         data: {
+  //           ...apiData.data,
+  //           potIndex,
+  //           amount,
+  //         },
+  //       });
+  //     }
+
+  //     return {
+  //       success: apiData.success,
+  //       message: apiData.message,
+  //       data: {
+  //         betId,
+  //         timestamp,
+  //       },
+  //     };
+  //   } catch (err: any) {
+  //     console.error('Error placing bet:', err.message,"eror code:",err.code);
+  //     message = 'Requested server failed to respond';
+
+  //     if (err.code === 'ECONNABORTED') {
+  //       message = 'Requested server timeout';
+  //     } else if (!err.response) {
+  //       message = 'Requested server is unavailable';
+  //     } else if (err.message) {
+  //       message = err.message;
+  //     }
+  //     console.log('socketID:', socketID);
+  //     if (socketID) {
+  //       // 
+  //     this.server.to(`user:${userId}`).emit('teenpattiBetResponse', { success: false, message });
+  //     }
+  //   }
+  // }
+
+    @SubscribeMessage('placeTeenpattiBet')
   async placeBet(
     @MessageBody()
     bet: {
@@ -191,141 +339,88 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
     const betId = uuidv4();
     const timestamp = Date.now();
 
-    const { userId, amount, betType, token, gameId, potIndex, tenantBaseURL } = bet;
+    const { userId } = bet;
 
-    const submitFlowData = {
-      betAmount: amount,
-      type: betType,
-      transactionId: betId,
-    };
-    let socketID = '';
-    let message = '';
-    let apiData: any;
-    const userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
+    try {
+      // Verify user socket exists
+      const userSocketId = await masterPrisma.gameOngoingUsers.findFirst({
         where: { userId },
         select: { socketId: true },
       });
 
       if (!userSocketId?.socketId) {
-        console.log('SocketId not found for userId:', userId);
+        this.logger.warn(`SocketId not found for userId: ${userId}`);
+        this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
+          success: false,
+          message: 'User session not found',
+        });
         return;
       }
 
-    socketID = userSocketId.socketId;
-    try {
-      // 🔹 API CALL
-      const response = await axios.post(
-        `${tenantBaseURL}/wave/game/submitFlow`,
-        submitFlowData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: 4000,
-        },
-      );
+      // Add bet to queue immediately
+      const queueResult = await this.betQueue.addBetToQueue({
+        betId,
+        userId,
+        amount: bet.amount,
+        betType: bet.betType,
+        token: bet.token,
+        gameId: bet.gameId,
+        potIndex: bet.potIndex,
+        tenantBaseURL: bet.tenantBaseURL,
+        appKey: bet.appKey,
+        timestamp,
+      });
 
-      apiData = response.data;
-
-      // 🔹 GET SOCKET ID
-    
-
-      if (apiData.success === false) {
-        this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
-          success: false,
-          message: apiData.message,
-          data: {
-            ...apiData.data,
-            potIndex,
-            amount,
-          },
-        });
-      }
-
-      // 🔹 SUCCESS
-      if (response.data?.success === true) {
-        const index = Number(potIndex);
-        this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
-        this.server.emit('potTotalBets', this.potTotalBets);
-        this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
-          success: true,
-          message: apiData.message,
-          data: {
-            ...apiData.data,
-            potIndex,
-            amount,
-          },
-        });
-
-
-        // this.server.to(socketID).emit('teenpattiBetResponse', {
-        //   success: true,
-        //   message: apiData.message,
-        //   data: {
-        //     ...apiData.data,
-        //     potIndex,
-        //     amount,
-        //   },
-        // });
-
-        // POT NAME
-        let potName = '';
-        if (bet.potIndex === 0) potName = 'Pot 1';
-        else if (bet.potIndex === 1) potName = 'Pot 2';
-        else if (bet.potIndex === 2) potName = 'Pot 3';
-
-        // 🔹 SAVE DB
-        if (bet.gameId === '16') {
-          await masterPrisma.ongoingTeenpattiGame.create({
-            data: {
-              potIndex: Number(bet.potIndex),
-              userId: bet.userId,
-              amount: bet.amount,
-              type: bet.betType,
-              potName,
-              appKey: bet.appKey || null,
-            },
-          });
-        }
-      } else {
-        this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
-          success: false,
-          message: apiData.message,
-          data: {
-            ...apiData.data,
-            potIndex,
-            amount,
-          },
-        });
-      }
-
-      return {
-        success: apiData.success,
-        message: apiData.message,
+      // Immediately respond to user (< 50ms)
+      this.server.to(`user:${userId}`).emit('betQueued', {
+        success: true,
+        message: 'Bet queued successfully',
         data: {
           betId,
+          queuePosition: queueResult.queuePosition,
           timestamp,
+          amount: bet.amount,
+          potIndex: bet.potIndex,
+        },
+      });
+
+      this.logger.log(
+        `✅ Bet ${betId} queued instantly for user ${userId} (Position: ${queueResult.queuePosition})`,
+      );
+
+      return {
+        success: true,
+        message: 'Bet queued',
+        data: {
+          betId,
+          queuePosition: queueResult.queuePosition,
         },
       };
-    } catch (err: any) {
-      console.error('Error placing bet:', err.message,"eror code:",err.code);
-      message = 'Requested server failed to respond';
+    } catch (error) {
+      this.logger.error(`Failed to queue bet: ${error.message}`);
+      
+      this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
+        success: false,
+        message: 'Failed to queue bet',
+      });
 
-      if (err.code === 'ECONNABORTED') {
-        message = 'Requested server timeout';
-      } else if (!err.response) {
-        message = 'Requested server is unavailable';
-      } else if (err.message) {
-        message = err.message;
-      }
-      console.log('socketID:', socketID);
-      if (socketID) {
-        // 
-      this.server.to(`user:${userId}`).emit('teenpattiBetResponse', { success: false, message });
-      }
+      return {
+        success: false,
+        message: error.message,
+      };
     }
   }
+
+  // Get queue statistics endpoint
+  @SubscribeMessage('getQueueStats')
+  async getQueueStats() {
+    const stats = await this.betQueue.getQueueStats();
+    return {
+      success: true,
+      data: stats,
+    };
+  }
+
 
   /**
    * Batch bet placement for load testing

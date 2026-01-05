@@ -8,6 +8,8 @@ import { TeenpattiModule } from './games/teen-patti-game/teenpatti/teenpatti.mod
 import { FruitsModule } from './games/fruits-game/fruits/fruits.module';
 import { TenantOrOrganizationModule } from './tenant-or-organization/tenant-or-organization.module';
 import { SocketModule } from './socket/socket.module';
+import { RedisModule } from './redis/redis.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { SocketModule } from './socket/socket.module';
     FruitsModule,
     TenantOrOrganizationModule,
     SocketModule,
+    RedisModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [AppService],
