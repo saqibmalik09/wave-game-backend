@@ -250,9 +250,9 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
 
   //     // 🔹 SUCCESS
   //     if (response.data?.success === true) {
-  //       const index = Number(potIndex);
-  //       this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
-  //       this.server.emit('potTotalBets', this.potTotalBets);
+        // const index = Number(potIndex);
+        // this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + amount;
+        // this.server.emit('potTotalBets', this.potTotalBets);
   //       this.server.to(`user:${userId}`).emit('teenpattiBetResponse', {
   //         success: true,
   //         message: apiData.message,
@@ -322,8 +322,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
   // }
 
     @SubscribeMessage('placeTeenpattiBet')
-  async placeBet(
-    @MessageBody()
+  async placeBet(@MessageBody()
     bet: {
       userId: string;
       amount: number;
@@ -370,7 +369,9 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         appKey: bet.appKey,
         timestamp,
       });
-
+        const index = Number(bet.potIndex);
+        this.potTotalBets[index] = (this.potTotalBets[index] ?? 0) + bet.amount;
+        this.server.emit('potTotalBets', this.potTotalBets);
       // Immediately respond to user (< 50ms)
       this.server.to(`user:${userId}`).emit('betQueued', {
         success: true,
