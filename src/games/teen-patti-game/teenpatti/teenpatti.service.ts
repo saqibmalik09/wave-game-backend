@@ -386,7 +386,7 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       });
 
       this.logger.log(
-        `✅ Bet ${betId} queued instantly for user ${userId} (Position: ${queueResult.queuePosition})`,
+        ` Bet ${betId} queued instantly for user ${userId} (Position: ${queueResult.queuePosition})`,
       );
 
       return {
@@ -762,7 +762,8 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
       const winnerRecord = await masterPrisma.gameOngoingUsers.findFirst({
         where: { userId },
         select: {
-          socketId: true,  // must be socketId: true
+          socketId: true,  
+          appKey: true,
           token: true
         },
       });
@@ -772,6 +773,8 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         continue;
       }
       let socketId = winnerRecord.socketId;
+      let appKey = winnerRecord.appKey;
+      
 
       const winningMessage = {
         userId,
@@ -783,9 +786,10 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         this.server.to(`user:${userId}`).emit("toWinnerMessage", winningMessage);
       }
       try {
-
+        let winAmount = expectedWinningAmount[userId];
+        
         let submitFlowData = {
-          "betAmount": expectedWinningAmount[userId],
+          "betAmount": winAmount,
           "type": 2,
           "transactionId": uuidv4()
         }
@@ -803,12 +807,15 @@ export class TeenpattiService implements OnGatewayInit, OnGatewayConnection, OnG
         );
 
         if (response.statusText == "OK") {
-          //added     
+          //added   
+           await masterPrisma.bet.create({
+              data: { gameId: 16, userId, bet: winAmount, type: 2, appKey: appKey || null, winningPercentage: winningPercentage, isRewarded: 1 },
+            });  
         } else {
           console.log("Failed to add win amount")
         }
 
-            } catch (err: any) {
+    } catch (err: any) {
         let message = 'Requested server failed to respond';
 
         if (err.code === 'ECONNABORTED') {

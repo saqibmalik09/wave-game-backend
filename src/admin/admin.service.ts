@@ -61,8 +61,7 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
       execSync('npx prisma migrate deploy --schema=prisma/tenant/schema.prisma', {
         stdio: 'inherit',
         env: {
-          ...process.env,
-          DATABASE_URL: tenantDbUrl, // override DATABASE_URL for this run
+          TENANT_DATABASE_URL: tenantDbUrl, // override DATABASE_URL for this run
         },
       });
 
@@ -249,7 +248,6 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
         tenantPassword: "4357983jf",
       },
     };
-    console.log("appKey:", appKey)
     if (!appKey || typeof appKey !== "string") {
       const response = {
         success: false,
@@ -348,6 +346,87 @@ export class AdminService implements OnGatewayInit, OnGatewayConnection, OnGatew
       };
     }
   }
+
+  public async gameStatistics(appKey: string) {
+    const rows = await masterPrisma.bet.groupBy({
+      by: ['gameId', 'type'],
+      where: {
+        appKey
+      },
+      _sum: {
+        bet: true
+      },
+      _count: {
+        _all: true
+      }
+    });
+  
+    const gameMap: Record<number, any> = {};
+  
+    for (const row of rows) {
+      const gameId = row.gameId;
+  
+      if (!gameMap[gameId]) {
+        gameMap[gameId] = {
+          gameId,
+          totalBetAmount: 0,
+          totalPayoutAmount: 0,
+          totalBets: 0
+        };
+      }
+  
+      if (row.type === 1) {
+        gameMap[gameId].totalBetAmount += row._sum.bet || 0;
+        gameMap[gameId].totalBets += row._count._all;
+      }
+  
+      if (row.type === 2) {
+        gameMap[gameId].totalPayoutAmount += row._sum.bet || 0;
+      }
+    }
+  
+    // finalize
+    const games = Object.values(gameMap).map((g: any) => {
+      const netProfit = g.totalBetAmount - g.totalPayoutAmount;
+      return {
+        ...g,
+        netProfit,
+        profitPercentage: g.totalBetAmount > 0
+          ? +(netProfit / g.totalBetAmount * 100).toFixed(2)
+          : 0
+      };
+    });
+  
+    // overall summary
+    const summary = games.reduce(
+      (acc, g) => {
+        acc.totalBetAmount += g.totalBetAmount;
+        acc.totalPayoutAmount += g.totalPayoutAmount;
+        acc.totalBets += g.totalBets;
+        acc.netProfit += g.netProfit;
+        return acc;
+      },
+      {
+        totalBetAmount: 0,
+        totalPayoutAmount: 0,
+        netProfit: 0,
+        totalBets: 0
+      }
+    );
+  
+    return {
+      appKey,
+      summary: {
+        ...summary,
+        profitPercentage:
+          summary.totalBetAmount > 0
+            ? +(summary.netProfit / summary.totalBetAmount * 100).toFixed(2)
+            : 0
+      },
+      games
+    };
+  }
+  
 
 }
 
