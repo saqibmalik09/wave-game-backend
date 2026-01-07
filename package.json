@@ -22,7 +22,7 @@
     "reset:tenant": "npx prisma migrate reset --schema=./prisma/tenant/schema.prisma --force",
     "migrate:master": "prisma migrate dev --schema=prisma/master/schema.prisma",
     "migrate:tenant": "prisma migrate dev --schema=prisma/tenant/schema.prisma",
-    "start:pm2": "pm2 start dist/main.js --name wave-game-backend"
+    "pm2": "pm2 start dist/main.js --name wave-game-backend"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
