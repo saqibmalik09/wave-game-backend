@@ -206,9 +206,13 @@ export class TeenpattiBetQueueService implements OnModuleInit, OnModuleDestroy {
       }
 
       if (apiResponse.success && job.data.gameId === '16') {
-
+        //integer cast job.data.gameId
+        const gameId = Number(job.data.gameId);
         await masterPrisma.ongoingTeenpattiGame.create({
           data: { potIndex: Number(potIndex), userId, amount, type: betType, potName, appKey: appKey || null },
+        });
+        await masterPrisma.bet.create({
+          data: { gameId, userId, bet: amount, type: betType, appKey: appKey || null },
         });
       }
 

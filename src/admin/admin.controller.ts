@@ -7,6 +7,10 @@ interface SubmitFlowDto {
   type: number; // 1 = deduct, 2 = add
   transactionId: string;
 }
+class AppKeyDto {
+  appKey: string;
+}
+
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
@@ -118,8 +122,6 @@ export class AdminController {
 
   }
 
-
-
   @Post('/game/create')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new game in master database' })
@@ -138,10 +140,10 @@ export class AdminController {
           example: {
             gameId: 16,
             bettingCoins: [
-              100,
               500,
               1000,
-              10000
+              10000,
+              500000
             ],
             cardImages: [
               [
@@ -189,7 +191,7 @@ export class AdminController {
               2.5
             ],
             colors: [
-              "#33ff66",
+              "#D10F97",
               "#3366ff",
               "#ffcc00",
               "#9933ff"
@@ -323,6 +325,77 @@ export class AdminController {
       success: true,
       message: 'User info fetched successfully',
       data: user,
+    };
+  }
+
+
+  @Post('report/game-statistics')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get game statistics for a specific Company' })
+  @ApiBody({
+    description: 'Provide the appKey of the organization',
+    type: AppKeyDto,
+    examples: {
+      example1: {
+        summary: 'Fetch statistics for Ricolive',
+        value: { appKey: 'Eeb1GshW3a' },
+      },
+    },
+  })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Statistics fetched successfully',
+  //   schema: {
+  //     example: {
+  //       success: true,
+  //       message: 'Statistics fetched successfully',
+  //       data: {
+  //         appKey: 'Eeb1GshW3a',
+  //         summary: {
+  //           totalBetAmount: 500000,
+  //           totalPayoutAmount: 420000,
+  //           netProfit: 80000,
+  //           profitPercentage: 16,
+  //           totalBets: 12000,
+  //           totalPlayers: 3500,
+  //         },
+  //         games: [
+  //           {
+  //             gameId: 16,
+  //             totalBetAmount: 300000,
+  //             totalPayoutAmount: 250000,
+  //             netProfit: 50000,
+  //             profitPercentage: 16.6,
+  //             totalBets: 7000,
+  //             totalPlayers: 2000,
+  //           },
+  //           {
+  //             gameId: 17,
+  //             totalBetAmount: 200000,
+  //             totalPayoutAmount: 170000,
+  //             netProfit: 30000,
+  //             profitPercentage: 15,
+  //             totalBets: 5000,
+  //             totalPlayers: 1500,
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   },
+  // })
+  @ApiResponse({ status: 400, description: 'Validation failed or appKey missing' })
+  async gameStatistics(@Body() body: AppKeyDto) {
+    const { appKey } = body;
+
+    if (!appKey) {
+      return { success: false, message: 'appKey is required' };
+    }
+
+    const data = await this.adminService.gameStatistics(appKey);
+    return {
+      success: true,
+      message: 'Statistics fetched successfully',
+      data,
     };
   }
 }
